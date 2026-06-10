@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anabolik Gelişim & Makro Takip Paneli</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col pb-20 md:pb-5">
+
+    <!-- Üst Bar -->
+    <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
+        <div>
+            <h1 class="text-lg font-bold text-emerald-500 tracking-wide">ARDA TOPRAK YAĞ YAKIM PROGRAMI</h1>
+            <p class="text-xs text-zinc-400">Hedef: -5 KG Yağ Yakımı (Temmuz Ortası)</p>
+        </div>
+        <div class="text-right">
+            <span id="current-date-str" class="text-sm font-semibold text-zinc-300"></span>
+        </div>
+    </header>
+
+    <!-- Ana Konteyner -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 space-y-6">
+        
+        <!-- Tab Navigasyon (Mobil Uyumlu) -->
+        <div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all bg-emerald-600 text-white">Dashboard</button>
+            <button onclick="switchTab('workout')" id="tab-workout" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200">PPL Programı</button>
+            <button onclick="switchTab('macros')" id="tab-macros" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200">Makro Sayıcı</button>
+        </div>
+
+        <!-- ================= DASHBOARD TAB ================= -->
+        <section id="content-dashboard" class="space-y-6">
+            <!-- İlaç & Kardiyo Hatırlatıcı Kartı -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">Bugünkü Farmakoloji Protokolü</h3>
+                        <p class="text-xs text-zinc-500 mb-4">Stabil kan seviyesi için enjeksiyonlar gün aşırı (EOD) veya Haftada 3 (Pzt-Çar-Cuma) bölünmelidir.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-full font-mono">Testo E (~43mg/günlük pay)</span>
+                        <span class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs rounded-full font-mono">Mast P (~17mg/günlük pay)</span>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400">Sabah Aç Karnına Kardiyo</h3>
+                        <p class="text-xs text-zinc-500 mt-1">30-40 Dk LISS (Eğimli Yürüyüş / Nabız 120-130)</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="cardio-checkbox" onchange="toggleCardio()" class="sr-only peer">
+                        <div class="w-14 h-7 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600 peer-checked:after:bg-white"></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Makro İlerleme Çubukları -->
+            <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+                <h3 class="text-md font-bold text-zinc-200">Günlük Enerji Dengesi</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
+                        <span class="text-xs text-zinc-500 uppercase block">Kalori</span>
+                        <span id="cal-progress" class="text-xl font-bold font-mono text-zinc-200">0 / 2100</span>
+                        <span class="text-[10px] text-zinc-400 block mt-1">kcal</span>
+                    </div>
+                    <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
+                        <span class="text-xs text-emerald-500 uppercase block">Protein</span>
+                        <span id="protein-progress" class="text-xl font-bold font-mono text-emerald-400">0 / 220</span>
+                        <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
+                    </div>
+                    <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
+                        <span class="text-xs text-amber-500 uppercase block">Karbonhidrat</span>
+                        <span id="carbs-progress" class="text-xl font-bold font-mono text-amber-400">0 / 160</span>
+                        <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
+                    </div>
+                    <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
+                        <span class="text-xs text-red-500 uppercase block">Yağ</span>
+                        <span id="fat-progress" class="text-xl font-bold font-mono text-red-400">0 / 60</span>
+                        <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= WORKOUT TAB ================= -->
+        <section id="content-workout" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-zinc-200">Push / Pull / Legs Döngüsü</h3>
+                <span class="text-xs bg-zinc-800 px-2.5 py-1 rounded-md text-zinc-400">Yoğunluk: RPE 9-10 (Tükeniş)</span>
+            </div>
+            <div id="workout-container" class="space-y-4"></div>
+        </section>
+
+        <!-- ================= MACROS TAB ================= -->
+        <section id="content-macros" class="hidden space-y-4">
+            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                <h3 class="text-md font-bold mb-3 text-zinc-200">Yeni Besin Kaydı Ekle</h3>
+                <form id="macro-form" onsubmit="addFood(event)" class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <!-- HTML5 Datalist Entegrasyonu -->
+                    <div class="col-span-2 md:col-span-1">
+                        <input type="text" id="food-name" list="preset-foods" oninput="handlePresetSelection(this.value)" placeholder="Örn: Haşlanmış Yumurta" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                        <datalist id="preset-foods"></datalist>
+                    </div>
+                    <input type="number" id="food-cal" step="any" placeholder="Kalori (kcal)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <input type="number" id="food-protein" step="any" placeholder="Protein (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <input type="number" id="food-carbs" step="any" placeholder="Karb (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <input type="number" id="food-fat" step="any" placeholder="Yağ (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                    <button type="submit" class="col-span-2 md:col-span-5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 rounded-lg transition-colors cursor-pointer">Listeye Ekle</button>
+                </form>
+            </div>
+
+            <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+                <div class="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex justify-between items-center">
+                    <h4 class="text-sm font-bold text-zinc-300">Bugün Tüketilen Besinler</h4>
+                    <button onclick="clearDay()" class="text-xs text-red-400 hover:text-red-300 transition-colors cursor-pointer">Günü Sıfırla</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-zinc-400">
+                        <thead class="bg-zinc-950 text-xs text-zinc-50 uppercase border-b border-zinc-800">
+                            <tr>
+                                <th class="px-4 py-3">Besin</th>
+                                <th class="px-4 py-3 text-center">Kalori</th>
+                                <th class="px-4 py-3 text-center">P</th>
+                                <th class="px-4 py-3 text-center">K</th>
+                                <th class="px-4 py-3 text-center">Y</th>
+                                <th class="px-4 py-3 text-center">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="food-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 grid grid-cols-3 py-2 text-center z-50">
+        <button onclick="switchTab('dashboard')" class="text-xs flex flex-col items-center gap-1 text-emerald-500"><span class="text-base">📊</span>Dashboard</button>
+        <button onclick="switchTab('workout')" class="text-xs flex flex-col items-center gap-1 text-zinc-400"><span class="text-base">🏋️‍♂️</span>Program</button>
+        <button onclick="switchTab('macros')" class="text-xs flex flex-col items-center gap-1 text-zinc-400"><span class="text-base">🍳</span>Makrolar</button>
+    </div>
+
+    <!-- SCRIPT ARCHITECTURE -->
+    <script>
+        const TARGETS = { kcal: 2100, protein: 220, carbs: 160, fat: 60 };
+
+        // Dahili Akıllı Besin Veritabanı Matrix'i
+        const FOOD_DATABASE = {
+            "Haşlanmış Yumurta (1 adet L Boy)": { cal: 75, p: 6.3, c: 0.6, f: 5.3 },
+            "Tavuk Göğsü (100g - Pişmiş)": { cal: 165, p: 31.0, c: 0.0, f: 3.6 },
+            "Tavuk Göğsü (100g - Çiğ)": { cal: 120, p: 22.5, c: 0.0, f: 2.5 },
+            "Basmati Pirinç (100g - Çiğ)": { cal: 354, p: 8.5, c: 78.5, f: 0.6 },
+            "Yulaf Ezmesi (100g)": { cal: 370, p: 12.5, c: 60.3, f: 7.0 },
+            "Pirinc Patlagi (1 adet)": { cal: 30, p: 0.7, c: 6.5, f: 0.2 },
+            "Whey Protein (1 Ölçek - 30g)": { cal: 118, p: 24.0, c: 1.8, f: 1.2 },
+            "Fıstık Ezmesi (1 Yemek Kaşığı - 20g)": { cal: 125, p: 5.2, c: 4.2, f: 10.1 },
+            "Zeytinyağı (1 Yemek Kaşığı - 10g)": { cal: 88, p: 0.0, c: 0.0, f: 10.0 },
+            "Süzme Yoğurt (%Inf - 100g)": { cal: 110, p: 9.5, c: 4.0, f: 6.0 },
+            "Dana Biftek / Bonfile (100g - Pişmiş)": { cal: 200, p: 28.0, c: 0.0, f: 9.0 }
+        };
+
+        const WORKOUT_DATA = [
+            { id: "push-a", name: "1. GÜN: İTİŞ - A (Göğüs & Ön Omuz)", exercises: [
+                { name: "Incline Dumbbell Press", target: "3 Set x 6-8 Tekrar (180sn Dinlenme)" },
+                { name: "Flat Machine / Hammer Chest Press", target: "3 Set x 8-10 Tekrar (120sn Dinlenme)" },
+                { name: "Incline Dumbbell Fly / Cable Cross", target: "3 Set x 12 Tekrar (90sn Dinlenme)" },
+                { name: "Dumbbell Lateral Raise", target: "4 Set x 12-15 Tekrar (Son set Drop-Set)" },
+                { name: "Cable Overhead Triceps Extension", target: "3 Set x 10-12 Tekrar (90sn Dinlenme)" }
+            ]},
+            { id: "pull-a", name: "2. GÜN: ÇEKİŞ - A (Sırt Genişliği & Biceps)", exercises: [
+                { name: "Lat Pulldown (Geniş Tutuş)", target: "3 Set x 8-10 Tekrar (120sn Dinlenme)" },
+                { name: "Chest-Supported Dumbbell Row", target: "3 Set x 10 Tekrar (90sn Dinlenme)" },
+                { name: "Straight-Arm Cable Pullover", target: "3 Set x 12 Tekrar (60sn Dinlenme)" },
+                { name: "Face Pull", target: "3 Set x 15 Tekrar (60sn Dinlenme)" },
+                { name: "Barbell Biceps Curl", target: "3 Set x 8-10 Tekrar (90sn Dinlenme)" }
+            ]},
+            { id: "legs-a", name: "3. GÜN: BACAK - A (Kuadriseps / Ön Bacak Baskın)", exercises: [
+                { name: "Hack Squat veya Leg Press", target: "3 Set x 6-8 Tekrar (180sn Dinlenme)" },
+                { name: "Leg Extension", target: "3 Set x 12 Tekrar (Son set Çift Drop)" },
+                { name: "Romanian Deadlift (RDL)", target: "3 Set x 10 Tekrar (120sn Dinlenme)" },
+                { name: "Standing Calf Raise", target: "4 Set x 15 Tekrar (Tepe noktasında 1sn Sıkıştır)" }
+            ]},
+            { id: "push-b", name: "4. GÜN: İTİŞ - B (Omuz & Üst Göğüs)", exercises: [
+                { name: "Smith Machine Shoulder Press", target: "3 Set x 6-8 Tekrar (180sn Dinlenme)" },
+                { name: "Incline Barbell Chest Press", target: "3 Set x 8-10 Tekrar (120sn Dinlenme)" },
+                { name: "Pec Deck Fly", target: "3 Set x 12 Tekrar (90sn Dinlenme)" },
+                { name: "Cable Lateral Raise", target: "4 Set x 12 Tekrar (60sn Dinlenme)" },
+                { name: "Rope Triceps Pushdown", target: "3 Set x 12 Tekrar (90sn Dinlenme)" }
+            ]},
+            { id: "pull-b", name: "5. GÜN: ÇEKİŞ - B (Sırt Kalınlığı & Arka Omuz)", exercises: [
+                { name: "T-Bar Row veya Barbell Row", target: "3 Set x 6-8 Tekrar (180sn Dinlenme)" },
+                { name: "Seated Cable Row (Dar Tutuş)", target: "3 Set x 10 Tekrar (90sn Dinlenme)" },
+                { name: "Reverse Grip Lat Pulldown", target: "3 Set x 10 Tekrar (90sn Dinlenme)" },
+                { name: "Reverse Pec Deck Fly", target: "3 Set x 15 Tekrar (60sn Dinlenme)" },
+                { name: "Incline Dumbbell Biceps Curl", target: "3 Set x 12 Tekrar (90sn Dinlenme)" }
+            ]},
+            { id: "legs-b", name: "6. GÜN: BACAK - B (Hamstring / Arka Bacak Baskın)", exercises: [
+                { name: "Lying Leg Curl", target: "4 Set x 10 Tekrar (90sn Dinlenme)" },
+                { name: "Bulgarian Split Squat", target: "3 Set x 10 Tekrar (120sn Dinlenme)" },
+                { name: "Leg Press (Ayaklar Yukarıda & Geniş)", target: "3 Set x 12 Tekrar (120sn Dinlenme)" },
+                { name: "Seated Calf Raise", target: "4 Set x 15 Tekrar (60sn Dinlenme)" }
+            ]}
+        ];
+
+        let state = {
+            date: new Date().toISOString().split('T')[0],
+            cardioDone: false,
+            foods: []
+        };
+
+        window.onload = function() {
+            document.getElementById('current-date-str').innerText = new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            buildDatalist();
+            loadState();
+            renderWorkoutMatrix();
+            updateUI();
+        };
+
+        // Datalist Elementini Generate Etme
+        function buildDatalist() {
+            const dl = document.getElementById('preset-foods');
+            dl.innerHTML = Object.keys(FOOD_DATABASE).map(key => `<option value="${key}"></option>`).join('');
+        }
+
+        // Auto-Fill Event Handler
+        function handlePresetSelection(value) {
+            if (FOOD_DATABASE[value]) {
+                document.getElementById('food-cal').value = FOOD_DATABASE[value].cal;
+                document.getElementById('food-protein').value = FOOD_DATABASE[value].p;
+                document.getElementById('food-carbs').value = FOOD_DATABASE[value].c;
+                document.getElementById('food-fat').value = FOOD_DATABASE[value].f;
+            }
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(`hyper_drive_log_${state.date}`);
+            if(saved) {
+                state = JSON.parse(saved);
+            } else {
+                state.cardioDone = false;
+                state.foods = [];
+                saveState();
+            }
+            document.getElementById('cardio-checkbox').checked = state.cardioDone;
+        }
+
+        function saveState() {
+            localStorage.setItem(`hyper_drive_log_${state.date}`, JSON.stringify(state));
+        }
+
+        function switchTab(tabName) {
+            const tabs = ['dashboard', 'workout', 'macros'];
+            tabs.forEach(t => {
+                document.getElementById(`content-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200";
+            });
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all bg-emerald-600 text-white";
+        }
+
+        function toggleCardio() {
+            state.cardioDone = document.getElementById('cardio-checkbox').checked;
+            saveState();
+        }
+
+        function renderWorkoutMatrix() {
+            const container = document.getElementById('workout-container');
+            container.innerHTML = WORKOUT_DATA.map(day => `
+                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+                    <div class="px-4 py-3 bg-zinc-800/40 border-b border-zinc-800 font-semibold text-sm text-zinc-200">
+                        <span>${day.name}</span>
+                    </div>
+                    <div class="p-3 divide-y divide-zinc-800/60">
+                        ${day.exercises.map(ex => `
+                            <div class="py-2.5 flex justify-between items-start md:items-center gap-2">
+                                <div>
+                                    <h5 class="text-sm font-medium text-zinc-300">${ex.name}</h5>
+                                    <p class="text-xs text-zinc-500 font-mono mt-0.5">${ex.target}</p>
+                                </div>
+                                <input type="checkbox" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-zinc-700 bg-zinc-950 mt-1 md:mt-0 cursor-pointer">
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Float / Ondalık Destekli Besin Ekleme Motoru
+        function addFood(e) {
+            e.preventDefault();
+            const food = {
+                id: Date.now(),
+                name: document.getElementById('food-name').value,
+                cal: parseFloat(parseFloat(document.getElementById('food-cal').value).toFixed(1)),
+                p: parseFloat(parseFloat(document.getElementById('food-protein').value).toFixed(1)),
+                c: parseFloat(parseFloat(document.getElementById('food-carbs').value).toFixed(1)),
+                f: parseFloat(parseFloat(document.getElementById('food-fat').value).toFixed(1))
+            };
+            state.foods.push(food);
+            saveState();
+            updateUI();
+            document.getElementById('macro-form').reset();
+        }
+
+        function removeFood(id) {
+            state.foods = state.foods.filter(f => f.id !== id);
+            saveState();
+            updateUI();
+        }
+
+        function clearDay() {
+            if(confirm("Bugünkü makroları sıfırlamak istediğine emin misin?")) {
+                state.foods = [];
+                state.cardioDone = false;
+                document.getElementById('cardio-checkbox').checked = false;
+                saveState();
+                updateUI();
+            }
+        }
+
+        // UI Pipeline & Floating Point Normalization
+        function updateUI() {
+            let totalCal = 0, totalP = 0, totalC = 0, totalF = 0;
+            const tbody = document.getElementById('food-table-body');
+            tbody.innerHTML = '';
+
+            if(state.foods.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-xs text-zinc-500 font-medium">Bugün henüz bir besin kaydı girmedin.</td></tr>`;
+            } else {
+                state.foods.forEach(f => {
+                    totalCal += f.cal;
+                    totalP += f.p;
+                    totalC += f.c;
+                    totalF += f.f;
+
+                    tbody.innerHTML += `
+                        <tr class="border-b border-zinc-800/60 hover:bg-zinc-900/40 font-mono text-xs">
+                            <td class="px-4 py-3 font-sans text-zinc-300 font-medium">${f.name}</td>
+                            <td class="px-4 py-3 text-center text-zinc-400">${f.cal.toFixed(1)}</td>
+                            <td class="px-4 py-3 text-center text-emerald-400">${f.p.toFixed(1)}g</td>
+                            <td class="px-4 py-3 text-center text-amber-400">${f.c.toFixed(1)}g</td>
+                            <td class="px-4 py-3 text-center text-red-400">${f.f.toFixed(1)}g</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="removeFood(${f.id})" class="text-red-500 hover:text-red-400 transition-colors font-sans cursor-pointer">Sil</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // JavaScript Float Precision Fix (.toFixed(1))
+            totalCal = parseFloat(totalCal.toFixed(1));
+            totalP = parseFloat(totalP.toFixed(1));
+            totalC = parseFloat(totalC.toFixed(1));
+            totalF = parseFloat(totalF.toFixed(1));
+
+            document.getElementById('cal-progress').innerText = `${totalCal} / ${TARGETS.kcal}`;
+            document.getElementById('protein-progress').innerText = `${totalP} / ${TARGETS.protein}`;
+            document.getElementById('carbs-progress').innerText = `${totalC} / ${TARGETS.carbs}`;
+            document.getElementById('fat-progress').innerText = `${totalF} / ${TARGETS.fat}`;
+            
+            colorAlert('cal-progress', totalCal, TARGETS.kcal, 'text-zinc-200', 'text-red-500');
+            colorAlert('protein-progress', totalP, TARGETS.protein, 'text-emerald-400', 'text-emerald-500');
+            colorAlert('carbs-progress', totalC, TARGETS.carbs, 'text-amber-400', 'text-red-500');
+            colorAlert('fat-progress', totalF, TARGETS.fat, 'text-red-400', 'text-red-500');
+        }
+
+        function colorAlert(elementId, current, target, baseClass, alertClass) {
+            const el = document.getElementById(elementId);
+            if(current > target) {
+                el.className = `text-xl font-bold font-mono ${alertClass}`;
+            } else {
+                el.className = `text-xl font-bold font-mono ${baseClass}`;
+            }
+        }
+    </script>
+</body>
+</html>
