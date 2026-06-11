@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anabolik Gelişim & Makro Takip Paneli</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -12,183 +18,219 @@
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col pb-20 md:pb-5">
 
-    <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-50 px-4 py-3 flex justify-between items-center">
-        <div>
-            <h1 class="text-lg font-bold text-emerald-500 tracking-wide">HYPER-DRIVE v1.2</h1>
-            <p class="text-xs text-zinc-400">Hedef: -5 KG Yağ Yakımı (Temmuz Ortası)</p>
-        </div>
-        <div class="text-right">
-            <span id="current-date-str" class="text-sm font-semibold text-zinc-300"></span>
-        </div>
-    </header>
-
-    <main class="flex-1 max-w-5xl w-full mx-auto p-4 space-y-6">
-        
-        <div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all bg-emerald-600 text-white cursor-pointer">Dashboard</button>
-            <button onclick="switchTab('workout')" id="tab-workout" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">PPL Programı</button>
-            <button onclick="switchTab('macros')" id="tab-macros" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">Makro Sayıcı</button>
-            <button onclick="switchTab('analysis')" id="tab-analysis" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">Gelişim & PR</button>
-        </div>
-
-        <section id="content-dashboard" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">Bugünkü Farmakoloji Protokolü</h3>
-                        <p class="text-xs text-zinc-500 mb-4">Stabil kan seviyesi için enjeksiyonlar gün aşırı (EOD) veya Haftada 3 (Pzt-Çar-Cuma) bölünmelidir.</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-full font-mono">Testo E (~43mg/günlük pay)</span>
-                        <span class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs rounded-full font-mono">Mast P (~17mg/günlük pay)</span>
-                    </div>
+    <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950">
+        <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl w-full max-w-md space-y-4 shadow-2xl">
+            <div class="text-center">
+                <h2 id="auth-title" class="text-xl font-bold text-emerald-500 tracking-wide">HYPER-DRIVE GİRİŞ PANELİ</h2>
+                <p id="auth-subtitle" class="text-xs text-zinc-400 mt-1">Gelişimini bulutta saklamak için oturum açın.</p>
+            </div>
+            
+            <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-zinc-400 font-medium block mb-1">E-posta Adresi</label>
+                    <input type="email" id="auth-email" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
-
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400">Sabah Aç Karnına Kardiyo</h3>
-                        <p class="text-xs text-zinc-500 mt-1">30-40 Dk LISS (Eğimli Yürüyüş / Nabız 120-130)</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="cardio-checkbox" onchange="toggleCardio()" class="sr-only peer">
-                        <div class="w-14 h-7 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600 peer-checked:after:bg-white"></div>
-                    </label>
+                <div>
+                    <label class="text-xs text-zinc-400 font-medium block mb-1">Şifre</label>
+                    <input type="password" id="auth-password" required minlength="6" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
                 </div>
+                <button type="submit" id="auth-submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors cursor-pointer mt-2">Giriş Yap</button>
+            </form>
+
+            <div class="text-center pt-2 border-t border-zinc-800/60">
+                <button onclick="toggleAuthMode()" id="auth-toggle-link" class="text-xs text-zinc-400 hover:text-emerald-400 transition-colors cursor-pointer">Hesabın yok mu? **Kayıt Ol**</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-screen" class="hidden flex flex-col min-h-screen">
+        <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-40 px-4 py-3 flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-bold text-emerald-500 tracking-wide">HYPER-DRIVE v1.4</h1>
+                <p class="text-xs text-zinc-400">Hedef: -5 KG Yağ Yakımı (Temmuz Ortası)</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="current-date-str" class="text-sm font-semibold text-zinc-300 hidden sm:inline"></span>
+                <button onclick="handleLogout()" class="bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 px-2.5 py-1.5 rounded-lg border border-zinc-700 transition-colors cursor-pointer">Çıkış Yap</button>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-5xl w-full mx-auto p-4 space-y-6">
+            
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all bg-emerald-600 text-white cursor-pointer">Dashboard</button>
+                <button onclick="switchTab('workout')" id="tab-workout" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">PPL Programı</button>
+                <button onclick="switchTab('macros')" id="tab-macros" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">Makro Sayıcı</button>
+                <button onclick="switchTab('analysis')" id="tab-analysis" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer">Gelişim & PR</button>
             </div>
 
-            <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
-                <h3 class="text-md font-bold text-zinc-200">Günlük Enerji Dengesi</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
-                        <span class="text-xs text-zinc-500 uppercase block">Kalori</span>
-                        <span id="cal-progress" class="text-xl font-bold font-mono text-zinc-200">0 / 2100</span>
-                        <span class="text-[10px] text-zinc-400 block mt-1">kcal</span>
+            <section id="content-dashboard" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">Bugünkü Farmakoloji Protokolü</h3>
+                            <p class="text-xs text-zinc-500 mb-4">Stabil kan seviyesi için enjeksiyonlar gün aşırı (EOD) veya Haftada 3 bölünmelidir.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-full font-mono">Testo E (~43mg/gün)</span>
+                            <span class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs rounded-full font-mono">Mast P (~17mg/gün)</span>
+                        </div>
                     </div>
-                    <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
-                        <span class="text-xs text-emerald-500 uppercase block">Protein</span>
-                        <span id="protein-progress" class="text-xl font-bold font-mono text-emerald-400">0 / 220</span>
-                        <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
-                    </div>
-                    <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
-                        <span class="text-xs text-amber-500 uppercase block">Karbonhidrat</span>
-                        <span id="carbs-progress" class="text-xl font-bold font-mono text-amber-400">0 / 160</span>
-                        <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
-                    </div>
-                    <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
-                        <span class="text-xs text-red-500 uppercase block">Yağ</span>
-                        <span id="fat-progress" class="text-xl font-bold font-mono text-red-400">0 / 60</span>
-                        <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
+
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400">Sabah Aç Karnına Kardiyo</h3>
+                            <p class="text-xs text-zinc-500 mt-1">30-40 Dk LISS (Eğimli Yürüyüş / Nabız 120-130)</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="cardio-checkbox" onchange="toggleCardio()" class="sr-only peer">
+                            <div class="w-14 h-7 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600 peer-checked:after:bg-white"></div>
+                        </label>
                     </div>
                 </div>
-            </div>
 
-            <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+                    <h3 class="text-md font-bold text-zinc-200">Günlük Enerji Dengesi & Makro Dağılımı</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                        <div class="grid grid-cols-2 gap-4 md:col-span-2">
+                            <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
+                                <span class="text-xs text-zinc-500 uppercase block">Kalori</span>
+                                <span id="cal-progress" class="text-xl font-bold font-mono text-zinc-200">0 / 2100</span>
+                                <span class="text-[10px] text-zinc-400 block mt-1">kcal</span>
+                            </div>
+                            <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
+                                <span class="text-xs text-emerald-500 uppercase block">Protein</span>
+                                <span id="protein-progress" class="text-xl font-bold font-mono text-emerald-400">0 / 220</span>
+                                <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
+                            </div>
+                            <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
+                                <span class="text-xs text-amber-500 uppercase block">Karbonhidrat</span>
+                                <span id="carbs-progress" class="text-xl font-bold font-mono text-amber-400">0 / 160</span>
+                                <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
+                            </div>
+                            <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
+                                <span class="text-xs text-red-500 uppercase block">Yağ</span>
+                                <span id="fat-progress" class="text-xl font-bold font-mono text-red-400">0 / 60</span>
+                                <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
+                            </div>
+                        </div>
+                        <div class="relative flex justify-center items-center h-40">
+                            <canvas id="macroDonutChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-md font-bold text-zinc-200">🏆 Son Kırılan Kişisel Rekorlar (PR)</h3>
+                        <button onclick="switchTab('analysis')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors cursor-pointer">Tüm Geçmişi Gör →</button>
+                    </div>
+                    <div id="dashboard-pr-container"></div>
+                </div>
+            </section>
+
+            <section id="content-workout" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="text-md font-bold text-zinc-200 flex items-center gap-2">
-                        <span>🏆 Son Kırılan Kişisel Rekorlar (PR)</span>
-                    </h3>
-                    <button onclick="switchTab('analysis')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors cursor-pointer">Tüm Geçmişi Gör →</button>
+                    <h3 class="text-lg font-bold text-zinc-200">Push / Pull / Legs Döngüsü</h3>
+                    <span class="text-xs bg-zinc-800 px-2.5 py-1 rounded-md text-zinc-400">Yoğunluk: RPE 9-10 (Tükeniş)</span>
                 </div>
-                <div id="dashboard-pr-container"></div>
-            </div>
-        </section>
+                <div id="workout-container" class="space-y-4"></div>
+            </section>
 
-        <section id="content-workout" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-zinc-200">Push / Pull / Legs Döngüsü</h3>
-                <span class="text-xs bg-zinc-800 px-2.5 py-1 rounded-md text-zinc-400">Yoğunluk: RPE 9-10 (Tükeniş)</span>
-            </div>
-            <div id="workout-container" class="space-y-4"></div>
-        </section>
+            <section id="content-macros" class="hidden space-y-4">
+                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                    <h3 class="text-md font-bold mb-3 text-zinc-200">Yeni Besin Kaydı Ekle</h3>
+                    <form id="macro-form" onsubmit="addFood(event)" class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                        <div class="col-span-2 md:col-span-1">
+                            <input type="text" id="food-name" list="preset-foods" oninput="handlePresetSelection(this.value)" placeholder="Örn: Haşlanmış Yumurta" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                            <datalist id="preset-foods"></datalist>
+                        </div>
+                        <input type="number" id="food-cal" step="any" placeholder="Kalori (kcal)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                        <input type="number" id="food-protein" step="any" placeholder="Protein (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                        <input type="number" id="food-carbs" step="any" placeholder="Karb (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                        <input type="number" id="food-fat" step="any" placeholder="Yağ (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                        <button type="submit" class="col-span-2 md:col-span-5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 rounded-lg transition-colors cursor-pointer">Listeye Ekle</button>
+                    </form>
+                </div>
 
-        <section id="content-macros" class="hidden space-y-4">
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                <h3 class="text-md font-bold mb-3 text-zinc-200">Yeni Besin Kaydı Ekle</h3>
-                <form id="macro-form" onsubmit="addFood(event)" class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    <div class="col-span-2 md:col-span-1">
-                        <input type="text" id="food-name" list="preset-foods" oninput="handlePresetSelection(this.value)" placeholder="Örn: Haşlanmış Yumurta" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
-                        <datalist id="preset-foods"></datalist>
+                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+                    <div class="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex justify-between items-center">
+                        <h4 class="text-sm font-bold text-zinc-300">Bugün Tüketilen Besinler</h4>
+                        <button onclick="clearDay()" class="text-xs text-red-400 hover:text-red-300 transition-colors cursor-pointer">Günü Sıfırla</button>
                     </div>
-                    <input type="number" id="food-cal" step="any" placeholder="Kalori (kcal)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
-                    <input type="number" id="food-protein" step="any" placeholder="Protein (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
-                    <input type="number" id="food-carbs" step="any" placeholder="Karb (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
-                    <input type="number" id="food-fat" step="any" placeholder="Yağ (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
-                    <button type="submit" class="col-span-2 md:col-span-5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 rounded-lg transition-colors cursor-pointer">Listeye Ekle</button>
-                </form>
-            </div>
-
-            <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
-                <div class="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex justify-between items-center">
-                    <h4 class="text-sm font-bold text-zinc-300">Bugün Tüketilen Besinler</h4>
-                    <button onclick="clearDay()" class="text-xs text-red-400 hover:text-red-300 transition-colors cursor-pointer">Günü Sıfırla</button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-zinc-400">
-                        <thead class="bg-zinc-950 text-xs text-zinc-50 uppercase border-b border-zinc-800">
-                            <tr>
-                                <th class="px-4 py-3">Besin</th>
-                                <th class="px-4 py-3 text-center">Kalori</th>
-                                <th class="px-4 py-3 text-center">P</th>
-                                <th class="px-4 py-3 text-center">K</th>
-                                <th class="px-4 py-3 text-center">Y</th>
-                                <th class="px-4 py-3 text-center">İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody id="food-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="content-analysis" class="hidden space-y-6">
-            <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
-                <h3 class="text-md font-bold text-zinc-200">🏆 Tüm Egzersizlerin En İyi Dereceleri (PR)</h3>
-                <div id="pr-summary-container"></div>
-            </div>
-
-            <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
-                <div class="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                    <div>
-                        <h4 class="text-sm font-bold text-zinc-300">Antrenman Geçmişi & Hacim Logları</h4>
-                        <p class="text-xs text-zinc-500 mt-0.5">Tüm geçmiş kaldırma kayıtları ve progressive overload analizleri.</p>
-                    </div>
-                    <div>
-                        <select id="analysis-exercise-select" onchange="renderHistoryTable(this.value)" class="bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 w-full sm:w-48 cursor-pointer">
-                            <option value="all">Tüm Egzersizler</option>
-                        </select>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-zinc-400">
+                            <thead class="bg-zinc-950 text-xs text-zinc-50 uppercase border-b border-zinc-800">
+                                <tr>
+                                    <th class="px-4 py-3">Besin</th>
+                                    <th class="px-4 py-3 text-center">Kalori</th>
+                                    <th class="px-4 py-3 text-center">P</th>
+                                    <th class="px-4 py-3 text-center">K</th>
+                                    <th class="px-4 py-3 text-center">Y</th>
+                                    <th class="px-4 py-3 text-center">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="food-table-body"></tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-zinc-400">
-                        <thead class="bg-zinc-950 text-xs text-zinc-50 uppercase border-b border-zinc-800">
-                            <tr>
-                                <th class="px-4 py-3">Tarih</th>
-                                <th class="px-4 py-3">Egzersiz</th>
-                                <th class="px-4 py-3 text-center">Ağırlık</th>
-                                <th class="px-4 py-3 text-center">Tekrar</th>
-                                <th class="px-4 py-3 text-center">Toplam Hacim</th>
-                                <th class="px-4 py-3 text-center">Durum</th>
-                                <th class="px-4 py-3 text-center">İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-    </main>
+            </section>
 
-    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 grid grid-cols-4 py-2 text-center z-50">
-        <button onclick="switchTab('dashboard')" id="mob-tab-dashboard" class="text-xs flex flex-col items-center gap-1 text-emerald-500 cursor-pointer"><span class="text-base">📊</span>Dashboard</button>
-        <button onclick="switchTab('workout')" id="mob-tab-workout" class="text-xs flex flex-col items-center gap-1 text-zinc-400 cursor-pointer"><span class="text-base">🏋️‍♂️</span>Program</button>
-        <button onclick="switchTab('macros')" id="mob-tab-macros" class="text-xs flex flex-col items-center gap-1 text-zinc-400 cursor-pointer"><span class="text-base">🍳</span>Makrolar</button>
-        <button onclick="switchTab('analysis')" id="mob-tab-analysis" class="text-xs flex flex-col items-center gap-1 text-zinc-400 cursor-pointer"><span class="text-base">📈</span>Analiz</button>
+            <section id="content-analysis" class="hidden space-y-6">
+                <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
+                    <h3 class="text-md font-bold text-zinc-200">🏆 Tüm Egzersizlerin En İyi Dereceleri (PR)</h3>
+                    <div id="pr-summary-container"></div>
+                </div>
+
+                <div id="volume-chart-card" class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4 hidden">
+                    <h3 id="volume-chart-title" class="text-md font-bold text-zinc-200">📈 Hacim Gelişim Grafiği</h3>
+                    <div class="h-64 w-full relative">
+                        <canvas id="volumeLineChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+                    <div class="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                        <div>
+                            <h4 class="text-sm font-bold text-zinc-300">Antrenman Geçmişi & Hacim Logları</h4>
+                        </div>
+                        <div>
+                            <select id="analysis-exercise-select" onchange="handleExerciseFilterChange(this.value)" class="bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 w-full sm:w-48 cursor-pointer">
+                                <option value="all">Tüm Egzersizler</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-zinc-400">
+                            <thead class="bg-zinc-950 text-xs text-zinc-50 uppercase border-b border-zinc-800">
+                                <tr>
+                                    <th class="px-4 py-3">Tarih</th>
+                                    <th class="px-4 py-3">Egzersiz</th>
+                                    <th class="px-4 py-3 text-center">Ağırlık</th>
+                                    <th class="px-4 py-3 text-center">Tekrar</th>
+                                    <th class="px-4 py-3 text-center">Toplam Hacim</th>
+                                    <th class="px-4 py-3 text-center">Durum</th>
+                                    <th class="px-4 py-3 text-center">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 grid grid-cols-4 py-2 text-center z-40">
+            <button onclick="switchTab('dashboard')" id="mob-tab-dashboard" class="text-xs flex flex-col items-center gap-1 text-emerald-500 cursor-pointer"><span class="text-base">📊</span>Dashboard</button>
+            <button onclick="switchTab('workout')" id="mob-tab-workout" class="text-xs flex flex-col items-center gap-1 text-zinc-400 cursor-pointer"><span class="text-base">🏋️‍♂️</span>Program</button>
+            <button onclick="switchTab('macros')" id="mob-tab-macros" class="text-xs flex flex-col items-center gap-1 text-zinc-400 cursor-pointer"><span class="text-base">🍳</span>Makrolar</button>
+            <button onclick="switchTab('analysis')" id="mob-tab-analysis" class="text-xs flex flex-col items-center gap-1 text-zinc-400 cursor-pointer"><span class="text-base">📈</span>Analiz</button>
+        </div>
     </div>
 
     <script>
         const TARGETS = { kcal: 2100, protein: 220, carbs: 160, fat: 60 };
 
-        // Dahili Akıllı Besin Veritabanı Matrix'i
         const FOOD_DATABASE = {
             "Haşlanmış Yumurta (1 adet L Boy)": { cal: 75, p: 6.3, c: 0.6, f: 5.3 },
             "Tavuk Göğsü (100g - Pişmiş)": { cal: 165, p: 31.0, c: 0.0, f: 3.6 },
@@ -197,10 +239,7 @@
             "Yulaf Ezmesi (100g)": { cal: 370, p: 12.5, c: 60.3, f: 7.0 },
             "Pirinc Patlagi (1 adet)": { cal: 30, p: 0.7, c: 6.5, f: 0.2 },
             "Whey Protein (1 Ölçek - 30g)": { cal: 118, p: 24.0, c: 1.8, f: 1.2 },
-            "Fıstık Ezmesi (1 Yemek Kaşığı - 20g)": { cal: 125, p: 5.2, c: 4.2, f: 10.1 },
-            "Zeytinyağı (1 Yemek Kaşığı - 10g)": { cal: 88, p: 0.0, c: 0.0, f: 10.0 },
-            "Süzme Yoğurt (%Inf - 100g)": { cal: 110, p: 9.5, c: 4.0, f: 6.0 },
-            "Dana Biftek / Bonfile (100g - Pişmiş)": { cal: 200, p: 28.0, c: 0.0, f: 9.0 }
+            "Fıstık Ezmesi (1 Yemek Kaşığı - 20g)": { cal: 125, p: 5.2, c: 4.2, f: 10.1 }
         };
 
         const WORKOUT_DATA = [
@@ -246,32 +285,136 @@
             ]}
         ];
 
-        
-        let liftHistory = JSON.parse(localStorage.getItem("liftHistory")) || {};
+        // Firebase Yapılandırması
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbRt1oKEt1vyO85TVYPhpvlYGRfqGPQ3M",
+            authDomain: "fitness-6f8cc.firebaseapp.com",
+            databaseURL: "https://fitness-6f8cc-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "fitness-6f8cc",
+            storageBucket: "fitness-6f8cc.firebasestorage.app",
+            messagingSenderId: "130420855119",
+            appId: "1:130420855119:web:8384dd2033a2df172a753a",
+            measurementId: "G-G5K9X4F3C9"
+        };
 
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+        let isSignUpMode = false;
+        let liftHistory = {};
         let state = {
             date: new Date().toISOString().split('T')[0],
             cardioDone: false,
             foods: []
         };
 
-        window.onload = function() {
-            document.getElementById('current-date-str').innerText = new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            buildDatalist();
-            loadState();
-            renderWorkoutMatrix();
-            renderDashboardPRs();
-            renderAnalysis();
-            updateUI();
-        };
+        let macroChartInstance = null;
+        let volumeChartInstance = null;
 
-        // Datalist Elementini Generate Etme
-        function buildDatalist() {
-            const dl = document.getElementById('preset-foods');
-            dl.innerHTML = Object.keys(FOOD_DATABASE).map(key => `<option value="${key}"></option>`).join('');
+        // Firebase Oturum Takibi Motoru
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                document.getElementById('current-date-str').innerText = new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                buildDatalist();
+                
+                // Kullanıcıya özel verileri veritabanından çek
+                await pullUserData();
+            } else {
+                currentUser = null;
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+            }
+        });
+
+        // Giriş Modu Değiştirici (Login / Register Toggle)
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('auth-title').innerText = isSignUpMode ? "HYPER-DRIVE KAYIT EKRANI" : "HYPER-DRIVE GİRİŞ PANELİ";
+            document.getElementById('auth-subtitle').innerText = isSignUpMode ? "Yeni hesap oluşturarak anlık senkronizasyonu başlatın." : "Gelişimini bulutta saklamak için oturum açın.";
+            document.getElementById('auth-submit-btn').innerText = isSignUpMode ? "Kayıt Ol ve Paneli Aç" : "Giriş Yap";
+            document.getElementById('auth-toggle-link').innerHTML = isSignUpMode ? "Zaten hesabın var mı? **Giriş Yap**" : "Hesabın yok mu? **Kayıt Ol**";
         }
 
-        // Auto-Fill Event Handler
+        // Giriş ve Kayıt İstek Yönetimi
+        async function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+
+            try {
+                if (isSignUpMode) {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    alert("Hesabın başarıyla oluşturuldu ve Firebase'e bağlandı!");
+                } else {
+                    await auth.signInWithEmailAndPassword(email, password);
+                }
+            } catch (error) {
+                alert("Hata: " + error.message);
+            }
+        }
+
+        function handleLogout() {
+            auth.signOut();
+        }
+
+        // Kullanıcıya Özel Bulut Verilerini Çekme Fonksiyonu
+        async function pullUserData() {
+            if (!currentUser) return;
+            const uid = currentUser.uid;
+
+            try {
+                // Antrenman Geçmişini Çek
+                const liftSnapshot = await database.ref(`users/${uid}/liftHistory`).once('value');
+                if (liftSnapshot.exists()) {
+                    liftHistory = liftSnapshot.val();
+                } else {
+                    liftHistory = {};
+                }
+
+                // Bugünkü Makro Loglarını Çek
+                const todayStr = state.date;
+                const stateSnapshot = await database.ref(`users/${uid}/dailyLogs/${todayStr}`).once('value');
+                if (stateSnapshot.exists()) {
+                    state = stateSnapshot.val();
+                    if (!state.foods) state.foods = [];
+                } else {
+                    state = { date: todayStr, cardioDone: false, foods: [] };
+                }
+
+                // Arayüzleri Güncelle
+                renderWorkoutMatrix();
+                renderDashboardPRs();
+                renderAnalysis();
+                updateUI();
+            } catch (err) {
+                console.error("Veri çekme hatası:", err);
+            }
+        }
+
+        // Buluta Anlık Kayıt Motoru
+        async function pushStateToCloud() {
+            if (!currentUser) return;
+            const uid = currentUser.uid;
+
+            try {
+                await database.ref(`users/${uid}/liftHistory`).set(liftHistory);
+                await database.ref(`users/${uid}/dailyLogs/${state.date}`).set(state);
+                console.log("☁️ Veriler bulutta senkronize edildi.");
+            } catch (err) {
+                console.error("Bulut kayıt hatası:", err);
+            }
+        }
+
+        function buildDatalist() {
+            const dl = document.getElementById('preset-foods');
+            if(dl) dl.innerHTML = Object.keys(FOOD_DATABASE).map(key => `<option value="${key}"></option>`).join('');
+        }
+
         function handlePresetSelection(value) {
             if (FOOD_DATABASE[value]) {
                 document.getElementById('food-cal').value = FOOD_DATABASE[value].cal;
@@ -281,47 +424,35 @@
             }
         }
 
-        function loadState() {
-            const saved = localStorage.getItem(`hyper_drive_log_${state.date}`);
-            if(saved) {
-                state = JSON.parse(saved);
-            } else {
-                state.cardioDone = false;
-                state.foods = [];
-                saveState();
-            }
-            document.getElementById('cardio-checkbox').checked = state.cardioDone;
-        }
-
-        function saveState() {
-            localStorage.setItem(`hyper_drive_log_${state.date}`, JSON.stringify(state));
-        }
-
         function switchTab(tabName) {
             const tabs = ['dashboard', 'workout', 'macros', 'analysis'];
             tabs.forEach(t => {
                 document.getElementById(`content-${t}`).classList.add('hidden');
                 document.getElementById(`tab-${t}`).className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer";
-                
                 const mobTab = document.getElementById(`mob-tab-${t}`);
                 if(mobTab) mobTab.className = "text-xs flex flex-col items-center gap-1 text-zinc-400 cursor-pointer";
             });
             
             document.getElementById(`content-${tabName}`).classList.remove('hidden');
             document.getElementById(`tab-${tabName}`).className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all bg-emerald-600 text-white cursor-pointer";
-            
             const mobActive = document.getElementById(`mob-tab-${tabName}`);
             if(mobActive) mobActive.className = "text-xs flex flex-col items-center gap-1 text-emerald-500 cursor-pointer";
+
+            if (tabName === 'analysis') {
+                updateVolumeChart(document.getElementById('analysis-exercise-select').value);
+            }
         }
 
         function toggleCardio() {
             state.cardioDone = document.getElementById('cardio-checkbox').checked;
-            saveState();
+            pushStateToCloud();
         }
 
-        // Antrenman Matrisini Yeniden Oluşturma (Son Antrenman ve PR Bilgileri Dahil)
+        // ARTIK ÇÖKMEYEN GÜVENLİ WORKOUT MATRIX RENDER MOTORU
         function renderWorkoutMatrix() {
             const container = document.getElementById('workout-container');
+            if (!container) return;
+
             container.innerHTML = WORKOUT_DATA.map(day => {
                 return `
                 <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
@@ -330,39 +461,49 @@
                     </div>
                     <div class="p-3 divide-y divide-zinc-800/60">
                         ${day.exercises.map((ex, index) => {
-                            const history = liftHistory[ex.name] || [];
-                            let trackingDataHTML = `<span class="text-[11px] text-zinc-500 block font-sans">Henüz kayıt yapılmamış</span>`;
+                            // Firebase veri tipini koruyan mekanizma (Array veya Object gelebilir)
+                            const rawHistory = liftHistory[ex.name];
+                            let history = [];
+                            if (rawHistory) {
+                                history = Array.isArray(rawHistory) ? rawHistory : Object.values(rawHistory);
+                            }
+                            
+                            let trackingHTML = `<span class="text-[11px] text-zinc-500 block">Henüz kayıt yok</span>`;
                             
                             if (history.length > 0) {
-                                const last = history[history.length - 1];
-                                let pr = history[0];
-                                history.forEach(h => {
-                                    if (h.weight > pr.weight || (h.weight === pr.weight && h.reps > pr.reps)) {
-                                        pr = h;
-                                    }
-                                });
+                                // Boş veya null olan satırları eliyoruz
+                                const cleanHistory = history.filter(h => h && typeof h === 'object');
+                                
+                                if (cleanHistory.length > 0) {
+                                    const last = cleanHistory[cleanHistory.length - 1];
+                                    let pr = cleanHistory[0];
+                                    cleanHistory.forEach(h => { 
+                                        if (h && (h.weight > pr.weight || (h.weight === pr.weight && h.reps > pr.reps))) {
+                                            pr = h; 
+                                        }
+                                    });
 
-                                trackingDataHTML = `
-                                    <div class="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] font-sans mt-0.5">
-                                        <span class="text-zinc-400">Son: <strong class="text-zinc-200 font-mono">${last.weight}kg x ${last.reps}</strong></span>
-                                        <span class="text-zinc-500">|</span>
-                                        <span class="text-zinc-400">PR: <strong class="text-amber-400 font-mono">${pr.weight}kg x ${pr.reps}</strong></span>
-                                        ${last.overload ? '<span class="text-emerald-400 font-bold ml-1 animate-pulse">🔥 Overload!</span>' : ''}
-                                    </div>
-                                `;
+                                    trackingHTML = `
+                                        <div class="flex gap-2 text-[11px] mt-0.5">
+                                            <span class="text-zinc-400">Son: <strong class="text-zinc-200">${last.weight}kg x ${last.reps}</strong></span>
+                                            <span class="text-zinc-500">|</span>
+                                            <span class="text-zinc-400">PR: <strong class="text-amber-400">${pr.weight}kg x ${pr.reps}</strong></span>
+                                        </div>
+                                    `;
+                                }
                             }
 
                             return `
                             <div class="py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                                <div class="space-y-0.5">
+                                <div>
                                     <h5 class="text-sm font-medium text-zinc-300">${ex.name}</h5>
                                     <p class="text-xs text-zinc-500 font-mono">${ex.target}</p>
-                                    ${trackingDataHTML}
+                                    ${trackingHTML}
                                 </div>
                                 <div class="flex items-center gap-2 self-end sm:self-auto">
-                                    <input type="number" id="weight-${day.id}-${index}" step="any" placeholder="Kg" class="w-16 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500 font-mono">
-                                    <input type="number" id="reps-${day.id}-${index}" placeholder="Tekrar" class="w-16 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500 font-mono">
-                                    <button onclick="saveLift('${ex.name}', 'weight-${day.id}-${index}', 'reps-${day.id}-${index}')" class="bg-emerald-600 hover:bg-emerald-500 transition-colors px-3 py-1 rounded text-xs font-semibold text-white cursor-pointer">Kaydet</button>
+                                    <input type="number" id="weight-${day.id}-${index}" placeholder="Kg" class="w-16 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200 font-mono">
+                                    <input type="number" id="reps-${day.id}-${index}" placeholder="Tekrar" class="w-16 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200 font-mono">
+                                    <button onclick="saveLift('${ex.name}', 'weight-${day.id}-${index}', 'reps-${day.id}-${index}')" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-xs font-semibold text-white cursor-pointer">Kaydet</button>
                                 </div>
                             </div>
                             `;
@@ -373,325 +514,259 @@
             }).join('');
         }
 
-        // Ağırlık, Tekrar ve Progressive Overload Analiz Motoru
         function saveLift(exercise, weightId, repsId) {
-            const weightInput = document.getElementById(weightId);
-            const repsInput = document.getElementById(repsId);
-            const weight = parseFloat(weightInput.value);
-            const reps = parseInt(repsInput.value);
+            const weight = parseFloat(document.getElementById(weightId).value);
+            const reps = parseInt(document.getElementById(repsId).value);
 
-            if (!weight || !reps || weight <= 0 || reps <= 0) {
-                alert("Lütfen geçerli ağırlık ve tekrar sayıları girin.");
-                return;
+            if (!weight || !reps) { alert("Değerleri girin!"); return; }
+
+            // liftHistory nesnesini hazırla
+            if (!liftHistory[exercise]) {
+                liftHistory[exercise] = [];
+            } else if (!Array.isArray(liftHistory[exercise])) {
+                // Firebase'den Object olarak döndüyse Array formatına dönüştür
+                liftHistory[exercise] = Object.values(liftHistory[exercise]);
+            }
+            
+            let isPr = true;
+            if(liftHistory[exercise].length > 0) {
+                let maxW = Math.max(...liftHistory[exercise].filter(l => l).map(l => l.weight));
+                if(weight <= maxW) isPr = false;
             }
 
-            if (!liftHistory[exercise]) liftHistory[exercise] = [];
-            const history = liftHistory[exercise];
-
-            let overload = false;
-            let isPr = false;
-            const currentVolume = weight * reps;
-
-            if (history.length > 0) {
-                const last = history[history.length - 1];
-                const lastVolume = last.weight * last.reps;
-
-                // Progressive Overload Algoritması: Ağırlık artışı, aynı ağırlıkta tekrar artışı veya hacim artışı durumu.
-                if (weight > last.weight || (weight === last.weight && reps > last.reps) || currentVolume > lastVolume) {
-                    overload = true;
-                }
-
-                // PR Kontrolü: Tüm zamanların en yüksek ağırlığı veya aynı en yüksek ağırlıkta en yüksek tekrar kontrolü.
-                let maxPrevWeight = 0;
-                let maxPrevRepsAtMaxWeight = 0;
-                history.forEach(h => {
-                    if (h.weight > maxPrevWeight) {
-                        maxPrevWeight = h.weight;
-                        maxPrevRepsAtMaxWeight = h.reps;
-                    } else if (h.weight === maxPrevWeight && h.reps > maxPrevRepsAtMaxWeight) {
-                        maxPrevRepsAtMaxWeight = h.reps;
-                    }
-                });
-
-                if (weight > maxPrevWeight || (weight === maxPrevWeight && reps > maxPrevRepsAtMaxWeight)) {
-                    isPr = true;
-                }
-            } else {
-                // İlk defa giriliyorsa baseline olarak otomatik overload ve PR kabul edilir.
-                overload = true;
-                isPr = true;
-            }
-
-            const newLog = {
+            liftHistory[exercise].push({
                 date: new Date().toLocaleDateString('tr-TR'),
                 timestamp: Date.now(),
                 weight: weight,
                 reps: reps,
-                overload: overload,
                 isPr: isPr
-            };
+            });
 
-            history.push(newLog);
-            localStorage.setItem('liftHistory', JSON.stringify(liftHistory));
+            document.getElementById(weightId).value = '';
+            document.getElementById(repsId).value = '';
 
-            weightInput.value = '';
-            repsInput.value = '';
-
-            // Pipeline Güncellemesi
             renderWorkoutMatrix();
             renderDashboardPRs();
             renderAnalysis();
+            pushStateToCloud();
         }
 
-        // Antrenman Kaydı Silme İşlemi
         function removeLift(exercise, timestamp) {
-            if (confirm("Bu kaldırma kaydını kalıcı olarak silmek istediğine emin misin?")) {
-                if (liftHistory[exercise]) {
-                    liftHistory[exercise] = liftHistory[exercise].filter(l => l.timestamp !== timestamp);
-                    if (liftHistory[exercise].length === 0) {
-                        delete liftHistory[exercise];
-                    } else {
-                        // Kalan kayıtların PR/Overload durumlarını zincirleme düzeltmek için (opsiyonel optimizasyon re-calc)
-                        liftHistory[exercise].forEach((log, index) => {
-                            if (index === 0) {
-                                log.overload = true;
-                                log.isPr = true;
-                            } else {
-                                const prev = liftHistory[exercise][index - 1];
-                                log.overload = (log.weight > prev.weight || (log.weight === prev.weight && log.reps > prev.reps) || (log.weight * log.reps > prev.weight * prev.reps));
-                                
-                                let sliced = liftHistory[exercise].slice(0, index);
-                                let maxW = Math.max(...sliced.map(s => s.weight));
-                                log.isPr = log.weight > maxW;
-                            }
-                        });
-                    }
-                    localStorage.setItem('liftHistory', JSON.stringify(liftHistory));
-                    renderWorkoutMatrix();
-                    renderDashboardPRs();
-                    renderAnalysis();
-                }
+            if (confirm("Kaydı silmek istiyor musun?")) {
+                let history = Array.isArray(liftHistory[exercise]) ? liftHistory[exercise] : Object.values(liftHistory[exercise]);
+                liftHistory[exercise] = history.filter(l => l && l.timestamp !== timestamp);
+                if(liftHistory[exercise].length === 0) delete liftHistory[exercise];
+                renderWorkoutMatrix();
+                renderDashboardPRs();
+                renderAnalysis();
+                pushStateToCloud();
             }
         }
 
-        // Dashboard Bölümündeki PR Kartlarını Güncelleme Sistemi
         function renderDashboardPRs() {
             const container = document.getElementById('dashboard-pr-container');
             if (!container) return;
-
+            
             let allPrs = [];
             Object.keys(liftHistory).forEach(ex => {
-                liftHistory[ex].forEach(log => {
-                    if (log.isPr) {
-                        allPrs.push({ exercise: ex, ...log });
-                    }
-                });
+                const raw = liftHistory[ex];
+                const list = Array.isArray(raw) ? raw : Object.values(raw);
+                list.forEach(log => { if (log && log.isPr) allPrs.push({ exercise: ex, ...log }); });
             });
-
             allPrs.sort((a, b) => b.timestamp - a.timestamp);
-            const recentPrs = allPrs.slice(0, 3);
+            const recent = allPrs.slice(0, 3);
 
-            if (recentPrs.length === 0) {
-                container.innerHTML = `<div class="text-center py-4 text-xs text-zinc-500 font-medium">Henüz kırılmış bir rekor (PR) yok. PPL programından kayıt yapmaya başla!</div>`;
+            if (recent.length === 0) {
+                container.innerHTML = `<div class="text-center py-2 text-xs text-zinc-500">Henüz rekor kaydı yok.</div>`;
                 return;
             }
 
-            container.innerHTML = `
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    ${recentPrs.map(pr => `
-                        <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800 flex flex-col justify-between">
-                            <div>
-                                <span class="text-[10px] text-zinc-500 font-mono block">${pr.date}</span>
-                                <h4 class="text-xs font-bold text-zinc-300 truncate mt-0.5">${pr.exercise}</h4>
-                            </div>
-                            <div class="flex justify-between items-center mt-3">
-                                <span class="text-sm font-black font-mono text-amber-400">${pr.weight} kg x ${pr.reps}</span>
-                                <span class="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[9px] rounded font-bold uppercase tracking-wide">PR 🏆</span>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">` + recent.map(pr => `
+                <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800 flex flex-col justify-between">
+                    <div><span class="text-[10px] text-zinc-500 font-mono block">${pr.date}</span>
+                    <h4 class="text-xs font-bold text-zinc-300 truncate mt-0.5">${pr.exercise}</h4></div>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-sm font-bold font-mono text-amber-400">${pr.weight} kg x ${pr.reps}</span>
+                        <span class="px-1.5 py-0.5 bg-amber-500/10 text-amber-400 text-[9px] rounded font-bold">PR 🏆</span>
+                    </div>
+                </div>`).join('') + `</div>`;
         }
 
-        // Gelişim & Analiz Sekmesi Görünümü Yönetimi
         function renderAnalysis() {
             const filterSelect = document.getElementById('analysis-exercise-select');
-            const selectedValue = filterSelect ? filterSelect.value : 'all';
-
-            const exercisesWithHistory = Object.keys(liftHistory);
-
-            // Seçim Dropdown Menüsünün Re-build Edilmesi
+            const selected = filterSelect ? filterSelect.value : 'all';
+            
             let selectHTML = `<option value="all">Tüm Egzersizler</option>`;
-            exercisesWithHistory.forEach(ex => {
-                selectHTML += `<option value="${ex}" ${selectedValue === ex ? 'selected' : ''}>${ex}</option>`;
-            });
+            Object.keys(liftHistory).forEach(ex => { selectHTML += `<option value="${ex}" ${selected === ex ? 'selected' : ''}>${ex}</option>`; });
             if (filterSelect) filterSelect.innerHTML = selectHTML;
 
-            // PR Dereceleri Listesi Matrisi
             const prContainer = document.getElementById('pr-summary-container');
-            if (exercisesWithHistory.length === 0) {
-                prContainer.innerHTML = `<p class="text-xs text-zinc-500 py-2">Kayıtlı egzersiz verisi bulunamadı.</p>`;
+            if (Object.keys(liftHistory).length === 0) {
+                if (prContainer) prContainer.innerHTML = `<p class="text-xs text-zinc-500">Veri yok.</p>`;
             } else {
-                let prHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">`;
-                exercisesWithHistory.forEach(ex => {
-                    const history = liftHistory[ex];
-                    let pr = history[0];
-                    history.forEach(h => {
-                        if (h.weight > pr.weight || (h.weight === pr.weight && h.reps > pr.reps)) {
-                            pr = h;
-                        }
-                    });
-                    prHTML += `
-                        <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800 flex justify-between items-center">
-                            <div>
-                                <span class="text-xs text-zinc-400 block font-medium truncate max-w-[150px] sm:max-w-none">${ex}</span>
-                                <span class="text-sm font-bold font-mono text-amber-400 mt-1 block">${pr.weight} kg x ${pr.reps}</span>
-                            </div>
-                            <span class="text-[10px] text-zinc-500 font-mono self-end">${pr.date}</span>
-                        </div>
-                    `;
-                });
-                prHTML += `</div>`;
-                prContainer.innerHTML = prHTML;
+                if (prContainer) {
+                    prContainer.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">` + Object.keys(liftHistory).map(ex => {
+                        const raw = liftHistory[ex];
+                        const list = (Array.isArray(raw) ? raw : Object.values(raw)).filter(h => h);
+                        if (list.length === 0) return '';
+                        let pr = list[0];
+                        list.forEach(h => { if (h.weight > pr.weight) pr = h; });
+                        return `<div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800 flex justify-between items-center">
+                            <div><span class="text-xs text-zinc-400 truncate block max-w-[140px]">${ex}</span>
+                            <span class="text-sm font-bold text-amber-400 font-mono">${pr.weight} kg x ${pr.reps}</span></div>
+                        </div>`;
+                    }).join('') + `</div>`;
+                }
             }
-
-            renderHistoryTable(selectedValue);
+            renderHistoryTable(selected);
         }
 
-        // Geçmiş Tablosunu Seçilen Filtreye Göre Render Eden Algoritma
+        function handleExerciseFilterChange(value) {
+            renderHistoryTable(value);
+            updateVolumeChart(value);
+        }
+
         function renderHistoryTable(filter = 'all') {
             const tbody = document.getElementById('history-table-body');
+            if (!tbody) return;
             tbody.innerHTML = '';
-
-            let allLogs = [];
-            Object.keys(liftHistory).forEach(ex => {
-                liftHistory[ex].forEach(log => {
-                    allLogs.push({ exercise: ex, ...log });
-                });
+            
+            let logs = [];
+            Object.keys(liftHistory).forEach(ex => { 
+                const raw = liftHistory[ex];
+                const list = Array.isArray(raw) ? raw : Object.values(raw);
+                list.forEach(l => { if (l) logs.push({ exercise: ex, ...l }); }); 
             });
+            logs.sort((a, b) => b.timestamp - a.timestamp);
 
-            // En yeni tarih en üstte görünecek şekilde sıralama
-            allLogs.sort((a, b) => b.timestamp - a.timestamp);
+            if (filter !== 'all') logs = logs.filter(l => l.exercise === filter);
+            if (logs.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-xs text-zinc-500">Kayıt yok.</td></tr>`; return; }
 
-            if (filter !== 'all') {
-                allLogs = allLogs.filter(l => l.exercise === filter);
-            }
-
-            if (allLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-xs text-zinc-500 font-medium">Seçili kriterde kaldırma kaydı bulunamadı.</td></tr>`;
-                return;
-            }
-
-            allLogs.forEach(l => {
-                const totalVolume = l.weight * l.reps;
-                let statusBadges = '';
-                if (l.isPr) statusBadges += `<span class="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] rounded font-bold mr-1">PR</span>`;
-                if (l.overload) statusBadges += `<span class="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] rounded font-bold">🔥 Overload</span>`;
-                if (!statusBadges) statusBadges = `<span class="text-zinc-600">-</span>`;
-
+            logs.forEach(l => {
                 tbody.innerHTML += `
-                    <tr class="border-b border-zinc-800/60 hover:bg-zinc-900/40 font-mono text-xs">
-                        <td class="px-4 py-3 font-sans text-zinc-400">${l.date}</td>
-                        <td class="px-4 py-3 font-sans text-zinc-200 font-medium">${l.exercise}</td>
-                        <td class="px-4 py-3 text-center text-zinc-300 font-bold">${l.weight} kg</td>
-                        <td class="px-4 py-3 text-center text-zinc-300">${l.reps}</td>
-                        <td class="px-4 py-3 text-center text-zinc-400">${totalVolume.toFixed(1)} kg</td>
-                        <td class="px-4 py-3 text-center">${statusBadges}</td>
-                        <td class="px-4 py-3 text-center">
-                            <button onclick="removeLift('${l.exercise}', ${l.timestamp})" class="text-red-500 hover:text-red-400 transition-colors font-sans cursor-pointer">Sil</button>
-                        </td>
-                    </tr>
-                `;
+                    <tr class="border-b border-zinc-800/60 font-mono text-xs hover:bg-zinc-900/30">
+                        <td class="px-4 py-3 font-sans text-zinc-500">${l.date}</td>
+                        <td class="px-4 py-3 font-sans text-zinc-300">${l.exercise}</td>
+                        <td class="px-4 py-3 text-center text-zinc-200 font-bold">${l.weight} kg</td>
+                        <td class="px-4 py-3 text-center">${l.reps}</td>
+                        <td class="px-4 py-3 text-center">${(l.weight * l.reps).toFixed(0)} kg</td>
+                        <td class="px-4 py-3 text-center">${l.isPr ? '<span class="text-amber-400 font-bold">PR</span>' : '-'}</td>
+                        <td class="px-4 py-3 text-center"><button onclick="removeLift('${l.exercise}', ${l.timestamp})" class="text-red-500 hover:text-red-400 font-sans cursor-pointer">Sil</button></td>
+                    </tr>`;
             });
         }
 
-        // Float / Ondalık Destekli Besin Ekleme Motoru
         function addFood(e) {
             e.preventDefault();
-            const food = {
+            if (!state.foods) state.foods = [];
+            state.foods.push({
                 id: Date.now(),
                 name: document.getElementById('food-name').value,
-                cal: parseFloat(parseFloat(document.getElementById('food-cal').value).toFixed(1)),
-                p: parseFloat(parseFloat(document.getElementById('food-protein').value).toFixed(1)),
-                c: parseFloat(parseFloat(document.getElementById('food-carbs').value).toFixed(1)),
-                f: parseFloat(parseFloat(document.getElementById('food-fat').value).toFixed(1))
-            };
-            state.foods.push(food);
-            saveState();
-            updateUI();
+                cal: parseFloat(document.getElementById('food-cal').value),
+                p: parseFloat(document.getElementById('food-protein').value),
+                c: parseFloat(document.getElementById('food-carbs').value),
+                f: parseFloat(document.getElementById('food-fat').value)
+            });
             document.getElementById('macro-form').reset();
+            updateUI();
+            pushStateToCloud();
         }
 
         function removeFood(id) {
             state.foods = state.foods.filter(f => f.id !== id);
-            saveState();
             updateUI();
+            pushStateToCloud();
         }
 
         function clearDay() {
-            if(confirm("Bugünkü makroları sıfırlamak istediğine emin misin?")) {
+            if (confirm("Sıfırlamak istiyor musun?")) {
                 state.foods = [];
                 state.cardioDone = false;
                 document.getElementById('cardio-checkbox').checked = false;
-                saveState();
                 updateUI();
+                pushStateToCloud();
             }
         }
 
-        // UI Pipeline & Floating Point Normalization
         function updateUI() {
-            let totalCal = 0, totalP = 0, totalC = 0, totalF = 0;
+            let tc = 0, tp = 0, tcrb = 0, tf = 0;
             const tbody = document.getElementById('food-table-body');
-            tbody.innerHTML = '';
+            
+            if (!state.foods) state.foods = [];
 
-            if(state.foods.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-xs text-zinc-500 font-medium">Bugün henüz bir besin kaydı girmedin.</td></tr>`;
-            } else {
+            if(tbody) {
+                tbody.innerHTML = state.foods.length === 0 ? `<tr><td colspan="6" class="text-center py-4 text-xs text-zinc-500">Bugün besin girilmedi.</td></tr>` : '';
                 state.foods.forEach(f => {
-                    totalCal += f.cal;
-                    totalP += f.p;
-                    totalC += f.c;
-                    totalF += f.f;
-
-                    tbody.innerHTML += `
-                        <tr class="border-b border-zinc-800/60 hover:bg-zinc-900/40 font-mono text-xs">
-                            <td class="px-4 py-3 font-sans text-zinc-300 font-medium">${f.name}</td>
-                            <td class="px-4 py-3 text-center text-zinc-400">${f.cal.toFixed(1)}</td>
-                            <td class="px-4 py-3 text-center text-emerald-400">${f.p.toFixed(1)}g</td>
-                            <td class="px-4 py-3 text-center text-amber-400">${f.c.toFixed(1)}g</td>
-                            <td class="px-4 py-3 text-center text-red-400">${f.f.toFixed(1)}g</td>
-                            <td class="px-4 py-3 text-center">
-                                <button onclick="removeFood(${f.id})" class="text-red-500 hover:text-red-400 transition-colors font-sans cursor-pointer">Sil</button>
-                            </td>
-                        </tr>
-                    `;
+                    if (f) {
+                        tc += f.cal; tp += f.p; tcrb += f.c; tf += f.f;
+                        tbody.innerHTML += `<tr class="border-b border-zinc-800/60 font-mono text-xs">
+                            <td class="px-4 py-3 font-sans text-zinc-300">${f.name}</td>
+                            <td class="px-4 py-3 text-center">${f.cal}</td>
+                            <td class="px-4 py-3 text-center text-emerald-400">${f.p}g</td>
+                            <td class="px-4 py-3 text-center text-amber-400">${f.c}g</td>
+                            <td class="px-4 py-3 text-center text-red-400">${f.f}g</td>
+                            <td class="px-4 py-3 text-center"><button onclick="removeFood(${f.id})" class="text-red-500 cursor-pointer">Sil</button></td>
+                        </tr>`;
+                    }
                 });
             }
-
-            // JavaScript Float Precision Fix (.toFixed(1))
-            totalCal = parseFloat(totalCal.toFixed(1));
-            totalP = parseFloat(totalP.toFixed(1));
-            totalC = parseFloat(totalC.toFixed(1));
-            totalF = parseFloat(totalF.toFixed(1));
-
-            document.getElementById('cal-progress').innerText = `${totalCal} / ${TARGETS.kcal}`;
-            document.getElementById('protein-progress').innerText = `${totalP} / ${TARGETS.protein}`;
-            document.getElementById('carbs-progress').innerText = `${totalC} / ${TARGETS.carbs}`;
-            document.getElementById('fat-progress').innerText = `${totalF} / ${TARGETS.fat}`;
+            document.getElementById('cal-progress').innerText = `${tc.toFixed(0)} / ${TARGETS.kcal}`;
+            document.getElementById('protein-progress').innerText = `${tp.toFixed(0)} / ${TARGETS.protein}`;
+            document.getElementById('carbs-progress').innerText = `${tcrb.toFixed(0)} / ${TARGETS.carbs}`;
+            document.getElementById('fat-progress').innerText = `${tf.toFixed(0)} / ${TARGETS.fat}`;
             
-            colorAlert('cal-progress', totalCal, TARGETS.kcal, 'text-zinc-200', 'text-red-500');
-            colorAlert('protein-progress', totalP, TARGETS.protein, 'text-emerald-400', 'text-emerald-500');
-            colorAlert('carbs-progress', totalC, TARGETS.carbs, 'text-amber-400', 'text-red-500');
-            colorAlert('fat-progress', totalF, TARGETS.fat, 'text-red-400', 'text-red-500');
+            // Checkbox durumunu buluttan gelene göre güncelle
+            const cardioCheck = document.getElementById('cardio-checkbox');
+            if (cardioCheck) cardioCheck.checked = state.cardioDone || false;
+
+            updateMacroDonutChart(tp, tcrb, tf);
         }
 
-        function colorAlert(elementId, current, target, baseClass, alertClass) {
-            const el = document.getElementById(elementId);
-            if(current > target) {
-                el.className = `text-xl font-bold font-mono ${alertClass}`;
+        function updateMacroDonutChart(p, c, f) {
+            const ctx = document.getElementById('macroDonutChart');
+            if (!ctx) return;
+            const total = p + c + f;
+            const data = total > 0 ? [p, c, f] : [1, 1, 1];
+            const colors = total > 0 ? ['#34d399', '#f59e0b', '#f87171'] : ['#27272a', '#27272a', '#27272a'];
+
+            if (macroChartInstance) {
+                macroChartInstance.data.datasets[0].data = data;
+                macroChartInstance.data.datasets[0].backgroundColor = colors;
+                macroChartInstance.update();
             } else {
-                el.className = `text-xl font-bold font-mono ${baseClass}`;
+                macroChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { datasets: [{ data: data, backgroundColor: colors, borderWidth: 0 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
+                });
+            }
+        }
+
+        function updateVolumeChart(exercise) {
+            const card = document.getElementById('volume-chart-card');
+            if (exercise === 'all' || !liftHistory[exercise]) { if(card) card.classList.add('hidden'); return; }
+            if(card) card.classList.remove('hidden');
+            
+            document.getElementById('volume-chart-title').innerText = `📈 ${exercise} - Toplam Hacim Gelişimi (kg)`;
+            
+            const raw = liftHistory[exercise];
+            const list = Array.isArray(raw) ? raw : Object.values(raw);
+            const sorted = list.filter(l => l).sort((a,b) => a.timestamp - b.timestamp);
+            
+            const labels = sorted.map(l => l.date);
+            const volumes = sorted.map(l => l.weight * l.reps);
+
+            const ctx = document.getElementById('volumeLineChart');
+            if (volumeChartInstance) {
+                volumeChartInstance.data.labels = labels;
+                volumeChartInstance.data.datasets[0].data = volumes;
+                volumeChartInstance.update();
+            } else {
+                volumeChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: [{ data: volumes, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.05)', fill: true, tension: 0.2 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
             }
         }
     </script>
