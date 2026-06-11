@@ -301,6 +301,8 @@
         const database = firebase.database();
         const auth = firebase.auth();
 
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
         let currentUser = null;
         let isSignUpMode = false;
         let liftHistory = {};
