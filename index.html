@@ -46,7 +46,7 @@
     <div id="app-screen" class="hidden flex flex-col min-h-screen">
         <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-40 px-4 py-3 flex justify-between items-center">
             <div>
-                <h1 class="text-lg font-bold text-emerald-500 tracking-wide">HYPER-DRIVE v1.4</h1>
+                <h1 class="text-lg font-bold text-emerald-500 tracking-wide">HYPER-DRIVE v1.5</h1>
                 <p class="text-xs text-zinc-400">Hedef: -5 KG Yağ Yakımı (Temmuz Ortası)</p>
             </div>
             <div class="flex items-center gap-3">
@@ -139,6 +139,15 @@
 
             <section id="content-macros" class="hidden space-y-4">
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                    <h3 class="text-md font-bold mb-3 text-emerald-500">🧠 Akıllı Makro Ekleme</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="smart-food-input" placeholder="Örn: 1 adet tam buğday lavaş, 300g tavuk" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                        <button onclick="addSmartFood()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer">Zekice Ekle</button>
+                    </div>
+                    <p class="text-[10px] text-zinc-500 mt-2">Sistem 'g', 'gram', 'adet' ifadelerini otomatik tanır. Bilinmeyen besinleri hafızaya alır.</p>
+                </div>
+
+                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
                     <h3 class="text-md font-bold mb-3 text-zinc-200">Yeni Besin Kaydı Ekle</h3>
                     <form id="macro-form" onsubmit="addFood(event)" class="grid grid-cols-2 md:grid-cols-5 gap-3">
                         <div class="col-span-2 md:col-span-1">
@@ -178,12 +187,12 @@
 
             <section id="content-analysis" class="hidden space-y-6">
                 <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
-                    <h3 class="text-md font-bold text-zinc-200">🏆 Tüm Egzersizlerin En İyi Dereceleri (PR)</h3>
+                    <h3 class="text-md font-bold text-zinc-200">📈 Tüm Egzersizlerin En İyi Dereceleri (PR)</h3>
                     <div id="pr-summary-container"></div>
                 </div>
 
                 <div id="volume-chart-card" class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4 hidden">
-                    <h3 id="volume-chart-title" class="text-md font-bold text-zinc-200">📈 Hacim Gelişim Grafiği</h3>
+                    <h3 id="volume-chart-title" class="text-md font-bold text-zinc-200">📊 Hacim Gelişim Grafiği</h3>
                     <div class="h-64 w-full relative">
                         <canvas id="volumeLineChart"></canvas>
                     </div>
@@ -242,11 +251,19 @@
             "Fıstık Ezmesi (1 Yemek Kaşığı - 20g)": { cal: 125, p: 5.2, c: 4.2, f: 10.1 }
         };
 
+        const SMART_DB = {
+            "tavuk": { cal: 165, p: 31, c: 0, f: 3.6, unit: "g" },
+            "yumurta": { cal: 75, p: 6.3, c: 0.6, f: 5.3, unit: "adet" },
+            "pirinç": { cal: 130, p: 2.7, c: 28, f: 0.3, unit: "g" },
+            "yulaf": { cal: 370, p: 12.5, c: 60, f: 7, unit: "g" }
+        };
+
+        // [DEĞİŞİKLİK]: Firebase'i çökerten tüm eğzersiz isimlerindeki "/" karakterleri güvenli hale getirildi.
         const WORKOUT_DATA = [
             { id: "push-a", name: "1. GÜN: İTİŞ - A (Göğüs & Ön Omuz)", exercises: [
                 { name: "Incline Dumbbell Press", target: "3 Set x 6-8 Tekrar (180sn Dinlenme)" },
-                { name: "Flat Machine / Hammer Chest Press", target: "3 Set x 8-10 Tekrar (120sn Dinlenme)" },
-                { name: "Incline Dumbbell Fly / Cable Cross", target: "3 Set x 12 Tekrar (90sn Dinlenme)" },
+                { name: "Flat Machine - Hammer Chest Press", target: "3 Set x 8-10 Tekrar (120sn Dinlenme)" },
+                { name: "Incline Dumbbell Fly - Cable Cross", target: "3 Set x 12 Tekrar (90sn Dinlenme)" },
                 { name: "Dumbbell Lateral Raise", target: "4 Set x 12-15 Tekrar (Son set Drop-Set)" },
                 { name: "Cable Overhead Triceps Extension", target: "3 Set x 10-12 Tekrar (90sn Dinlenme)" }
             ]},
@@ -280,12 +297,11 @@
             { id: "legs-b", name: "6. GÜN: BACAK - B (Hamstring / Arka Bacak Baskın)", exercises: [
                 { name: "Lying Leg Curl", target: "4 Set x 10 Tekrar (90sn Dinlenme)" },
                 { name: "Bulgarian Split Squat", target: "3 Set x 10 Tekrar (120sn Dinlenme)" },
-                { name: "Leg Press (Ayaklar Yukarıda & Geniş)", target: "3 Set x 12 Tekrar (120sn Dinlenme)" },
+                { name: "Leg Press (Ayaklar Yukarıda ve Geniş)", target: "3 Set x 12 Tekrar (120sn Dinlenme)" },
                 { name: "Seated Calf Raise", target: "4 Set x 15 Tekrar (60sn Dinlenme)" }
             ]}
         ];
 
-        // Firebase Yapılandırması
         const firebaseConfig = {
             apiKey: "AIzaSyDbRt1oKEt1vyO85TVYPhpvlYGRfqGPQ3M",
             authDomain: "fitness-6f8cc.firebaseapp.com",
@@ -306,6 +322,7 @@
         let currentUser = null;
         let isSignUpMode = false;
         let liftHistory = {};
+        let customSmartFoods = {};
         let state = {
             date: new Date().toISOString().split('T')[0],
             cardioDone: false,
@@ -315,7 +332,6 @@
         let macroChartInstance = null;
         let volumeChartInstance = null;
 
-        // Firebase Oturum Takibi Motoru
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
@@ -324,7 +340,6 @@
                 document.getElementById('current-date-str').innerText = new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 buildDatalist();
                 
-                // Kullanıcıya özel verileri veritabanından çek
                 await pullUserData();
             } else {
                 currentUser = null;
@@ -333,7 +348,76 @@
             }
         });
 
-        // Giriş Modu Değiştirici (Login / Register Toggle)
+        function addSmartFood() {
+            const input = document.getElementById('smart-food-input').value.toLowerCase();
+            const match = input.match(/(\d+)\s*(g|gram|adet|tane)?\s*(.*)/);
+            
+            if (!match) { alert("Anlayamadım! '300g tavuk' veya '1 adet tam buğday lavaş' gibi yaz."); return; }
+
+            const amount = parseInt(match[1]);
+            const foodName = match[3].trim();
+            
+            let dbItem = Object.keys(SMART_DB).find(key => foodName.includes(key));
+            let base = null;
+            let matchedKey = "";
+
+            if (dbItem) {
+                base = SMART_DB[dbItem];
+                matchedKey = dbItem;
+            } else {
+                dbItem = Object.keys(customSmartFoods).find(key => foodName.includes(key));
+                if (dbItem) {
+                    base = customSmartFoods[dbItem];
+                    matchedKey = dbItem;
+                }
+            }
+
+            if (!base) {
+                const confirmNew = confirm(`"${foodName}" akıllı hafızada bulunamadı. Değerlerini bir defalık girerek sisteme öğretmek ister misiniz?`);
+                if (!confirmNew) return;
+
+                const unit = prompt("Birim türü nedir? (Sadece 'g' veya 'adet' yazın):", "adet");
+                if (unit !== "g" && unit !== "adet") { alert("Geçersiz birim! İptal edildi."); return; }
+
+                const promptTarget = unit === "g" ? "100g" : "1 adet";
+                const cal = parseFloat(prompt(`${foodName} (${promptTarget}) için Kalori (kcal):`));
+                const p = parseFloat(prompt(`${foodName} (${promptTarget}) için Protein (g):`));
+                const c = parseFloat(prompt(`${foodName} (${promptTarget}) için Karbonhidrat (g):`));
+                const f = parseFloat(prompt(`${foodName} (${promptTarget}) için Yağ (g):`));
+
+                if (isNaN(cal) || isNaN(p) || isNaN(c) || isNaN(f)) {
+                    alert("Hatalı veya eksik değer girdiniz. Kayıt başarısız.");
+                    return;
+                }
+
+                customSmartFoods[foodName] = { cal, p, c, f, unit };
+                
+                if (currentUser) {
+                    database.ref(`users/${currentUser.uid}/customSmartFoods/${foodName}`).set(customSmartFoods[foodName]);
+                }
+
+                base = customSmartFoods[foodName];
+                matchedKey = foodName;
+            }
+
+            const multiplier = base.unit === "g" ? amount / 100 : amount;
+
+            if (!state.foods) state.foods = [];
+            
+            state.foods.push({
+                id: Date.now(),
+                name: `${amount}${base.unit} ${matchedKey}`,
+                cal: Math.round(base.cal * multiplier),
+                p: Math.round(base.p * multiplier),
+                c: Math.round(base.c * multiplier),
+                f: Math.round(base.f * multiplier)
+            });
+
+            updateUI();
+            pushStateToCloud();
+            document.getElementById('smart-food-input').value = '';
+        }
+
         function toggleAuthMode() {
             isSignUpMode = !isSignUpMode;
             document.getElementById('auth-title').innerText = isSignUpMode ? "HYPER-DRIVE KAYIT EKRANI" : "HYPER-DRIVE GİRİŞ PANELİ";
@@ -342,7 +426,6 @@
             document.getElementById('auth-toggle-link').innerHTML = isSignUpMode ? "Zaten hesabın var mı? **Giriş Yap**" : "Hesabın yok mu? **Kayıt Ol**";
         }
 
-        // Giriş ve Kayıt İstek Yönetimi
         async function handleAuth(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
@@ -362,53 +445,91 @@
 
         function handleLogout() {
             auth.signOut();
+            localStorage.clear();
         }
 
-        // Kullanıcıya Özel Bulut Verilerini Çekme Fonksiyonu
         async function pullUserData() {
+            const localLift = localStorage.getItem('hd_local_liftHistory');
+            const localState = localStorage.getItem('hd_local_state');
+            const localCustom = localStorage.getItem('hd_local_customSmartFoods');
+
+            if (localLift) liftHistory = JSON.parse(localLift);
+            if (localCustom) customSmartFoods = JSON.parse(localCustom);
+            if (localState) {
+                const parsedState = JSON.parse(localState);
+                if (parsedState.date === state.date) state = parsedState;
+            }
+
+            // [MIGRATION GUARD]: Eğer yerel hafızada önceden kalmış zehirli '/' anahtarları varsa bulutu kilitlememesi için otomatik temizle.
+            Object.keys(liftHistory).forEach(ex => {
+                if (ex.includes('/')) {
+                    const safeKey = ex.replace(/\s*\/\s*/g, ' - ');
+                    liftHistory[safeKey] = liftHistory[ex];
+                    delete liftHistory[ex];
+                }
+            });
+
+            renderWorkoutMatrix();
+            renderDashboardPRs();
+            renderAnalysis();
+            updateUI();
+
             if (!currentUser) return;
             const uid = currentUser.uid;
 
             try {
-                // Antrenman Geçmişini Çek
                 const liftSnapshot = await database.ref(`users/${uid}/liftHistory`).once('value');
                 if (liftSnapshot.exists()) {
                     liftHistory = liftSnapshot.val();
-                } else {
-                    liftHistory = {};
+                    
+                    // Buluttan çekerken de eski verileri bir kereliğine temizle
+                    Object.keys(liftHistory).forEach(ex => {
+                        if (ex.includes('/')) {
+                            const safeKey = ex.replace(/\s*\/\s*/g, ' - ');
+                            liftHistory[safeKey] = liftHistory[ex];
+                            delete liftHistory[ex];
+                        }
+                    });
+                    localStorage.setItem('hd_local_liftHistory', JSON.stringify(liftHistory));
                 }
 
-                // Bugünkü Makro Loglarını Çek
+                const customSnapshot = await database.ref(`users/${uid}/customSmartFoods`).once('value');
+                if (customSnapshot.exists()) {
+                    customSmartFoods = customSnapshot.val();
+                    localStorage.setItem('hd_local_customSmartFoods', JSON.stringify(customSmartFoods));
+                }
+
                 const todayStr = state.date;
                 const stateSnapshot = await database.ref(`users/${uid}/dailyLogs/${todayStr}`).once('value');
                 if (stateSnapshot.exists()) {
                     state = stateSnapshot.val();
                     if (!state.foods) state.foods = [];
-                } else {
-                    state = { date: todayStr, cardioDone: false, foods: [] };
+                    localStorage.setItem('hd_local_state', JSON.stringify(state));
                 }
 
-                // Arayüzleri Güncelle
                 renderWorkoutMatrix();
                 renderDashboardPRs();
                 renderAnalysis();
                 updateUI();
             } catch (err) {
-                console.error("Veri çekme hatası:", err);
+                console.log("⚠️ Salon bağlantısı zayıf veya çevrimdışı. Cihaz yerel disk korumasında çalışıyor.", err);
             }
         }
 
-        // Buluta Anlık Kayıt Motoru
         async function pushStateToCloud() {
+            localStorage.setItem('hd_local_liftHistory', JSON.stringify(liftHistory));
+            localStorage.setItem('hd_local_state', JSON.stringify(state));
+            localStorage.setItem('hd_local_customSmartFoods', JSON.stringify(customSmartFoods));
+
             if (!currentUser) return;
             const uid = currentUser.uid;
 
             try {
                 await database.ref(`users/${uid}/liftHistory`).set(liftHistory);
                 await database.ref(`users/${uid}/dailyLogs/${state.date}`).set(state);
-                console.log("☁️ Veriler bulutta senkronize edildi.");
+                console.log("☁️ Veriler buluta başarıyla eşitlendi.");
             } catch (err) {
-                console.error("Bulut kayıt hatası:", err);
+                console.error("☁️ Bulut eşitlemesi başarısız (Yasaklı karakter hatası düzeltildi, internetinizi kontrol edin).", err);
             }
         }
 
@@ -450,7 +571,6 @@
             pushStateToCloud();
         }
 
-        // ARTIK ÇÖKMEYEN GÜVENLİ WORKOUT MATRIX RENDER MOTORU
         function renderWorkoutMatrix() {
             const container = document.getElementById('workout-container');
             if (!container) return;
@@ -463,7 +583,6 @@
                     </div>
                     <div class="p-3 divide-y divide-zinc-800/60">
                         ${day.exercises.map((ex, index) => {
-                            // Firebase veri tipini koruyan mekanizma (Array veya Object gelebilir)
                             const rawHistory = liftHistory[ex.name];
                             let history = [];
                             if (rawHistory) {
@@ -473,7 +592,6 @@
                             let trackingHTML = `<span class="text-[11px] text-zinc-500 block">Henüz kayıt yok</span>`;
                             
                             if (history.length > 0) {
-                                // Boş veya null olan satırları eliyoruz
                                 const cleanHistory = history.filter(h => h && typeof h === 'object');
                                 
                                 if (cleanHistory.length > 0) {
@@ -522,21 +640,22 @@
 
             if (!weight || !reps) { alert("Değerleri girin!"); return; }
 
-            // liftHistory nesnesini hazırla
-            if (!liftHistory[exercise]) {
-                liftHistory[exercise] = [];
-            } else if (!Array.isArray(liftHistory[exercise])) {
-                // Firebase'den Object olarak döndüyse Array formatına dönüştür
-                liftHistory[exercise] = Object.values(liftHistory[exercise]);
+            // [GÜVENCE]: Her ihtimale karşı dinamik gelen isimlerde de slash kalmışsa temizle
+            const safeExercise = exercise.replace(/\s*\/\s*/g, ' - ');
+
+            if (!liftHistory[safeExercise]) {
+                liftHistory[safeExercise] = [];
+            } else if (!Array.isArray(liftHistory[safeExercise])) {
+                liftHistory[safeExercise] = Object.values(liftHistory[safeExercise]);
             }
             
             let isPr = true;
-            if(liftHistory[exercise].length > 0) {
-                let maxW = Math.max(...liftHistory[exercise].filter(l => l).map(l => l.weight));
+            if(liftHistory[safeExercise].length > 0) {
+                let maxW = Math.max(...liftHistory[safeExercise].filter(l => l).map(l => l.weight));
                 if(weight <= maxW) isPr = false;
             }
 
-            liftHistory[exercise].push({
+            liftHistory[safeExercise].push({
                 date: new Date().toLocaleDateString('tr-TR'),
                 timestamp: Date.now(),
                 weight: weight,
@@ -717,7 +836,6 @@
             document.getElementById('carbs-progress').innerText = `${tcrb.toFixed(0)} / ${TARGETS.carbs}`;
             document.getElementById('fat-progress').innerText = `${tf.toFixed(0)} / ${TARGETS.fat}`;
             
-            // Checkbox durumunu buluttan gelene göre güncelle
             const cardioCheck = document.getElementById('cardio-checkbox');
             if (cardioCheck) cardioCheck.checked = state.cardioDone || false;
 
