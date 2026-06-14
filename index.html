@@ -49,7 +49,7 @@
     <div id="app-screen" class="hidden flex flex-col min-h-screen">
         <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-40 px-4 py-3 flex justify-between items-center">
             <div>
-                <h1 class="text-lg font-bold text-emerald-500 tracking-wide">HYPER-DRIVE v1.6</h1>
+                <h1 class="text-lg font-bold text-emerald-500 tracking-wide">HYPER-DRIVE v1.7</h1>
                 <p class="text-xs text-zinc-400">Hedef: -5 KG Yağ Yakımı (Temmuz Ortası)</p>
             </div>
             <div class="flex items-center gap-3">
@@ -68,8 +68,7 @@
             </div>
 
             <div id="date-selector-container" class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
-                <div id="date-buttons-bar" class="flex gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 no-scrollbar">
-                    </div>
+                <div id="date-buttons-bar" class="flex gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 no-scrollbar"></div>
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end border-t border-zinc-800/60 sm:border-0 pt-2 sm:pt-0">
                     <span class="text-xs text-zinc-400 font-medium">Geçmişe Git:</span>
                     <input type="date" id="custom-date-picker" onchange="handleCustomDateChange(this.value)" class="bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus:border-emerald-500 cursor-pointer font-mono">
@@ -161,27 +160,30 @@
             </section>
 
             <section id="content-macros" class="hidden space-y-4">
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <h3 class="text-md font-bold mb-3 text-emerald-500">🧠 Akıllı Makro Ekleme</h3>
+                <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 shadow-lg">
+                    <h3 class="text-md font-bold mb-2 text-emerald-500 flex items-center gap-1.5">
+                        <span>🧠</span> AI Doğal Dil Makro Ekleme
+                    </h3>
+                    <p class="text-xs text-zinc-400 mb-3">İnternetten makro bakmaya son. Ne yediğini doğal bir şekilde yaz, gerisini motor halletsin.</p>
                     <div class="flex gap-2">
-                        <input type="text" id="smart-food-input" placeholder="Örn: 1 adet tam buğday lavaş, 300g tavuk" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
-                        <button onclick="addSmartFood()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer">Zekice Ekle</button>
+                        <input type="text" id="smart-food-input" placeholder="Örn: 300g kıyma / 3 yumurta beyazı / 150g basmati / 2 ölçek whey / 1 kaşık zeytinyağı" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500 font-sans">
+                        <button onclick="addSmartFood()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors cursor-pointer shrink-0">Zekice Ekle</button>
                     </div>
-                    <p class="text-[10px] text-zinc-500 mt-2">Sistem 'g', 'gram', 'adet' ifadelerini otomatik tanır. Bilinmeyen besinleri hafızaya alır.</p>
+                    <p class="text-[10px] text-zinc-500 mt-2 font-mono">Sistem gram (g), adet, tane, ölçek, kaşık ve bardak birimlerini anlar; protein ve karbonhidratları hassas hesaplar.</p>
                 </div>
 
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <h3 class="text-md font-bold mb-3 text-zinc-200">Yeni Besin Kaydı Ekle</h3>
+                    <h3 class="text-md font-bold mb-3 text-zinc-200">Manuel Besin Kaydı Ekle (Eski Yöntem)</h3>
                     <form id="macro-form" onsubmit="addFood(event)" class="grid grid-cols-2 md:grid-cols-5 gap-3">
                         <div class="col-span-2 md:col-span-1">
-                            <input type="text" id="food-name" list="preset-foods" oninput="handlePresetSelection(this.value)" placeholder="Örn: Haşlanmış Yumurta" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                            <input type="text" id="food-name" list="preset-foods" oninput="handlePresetSelection(this.value)" placeholder="Örn: Tavuk Göğsü" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
                             <datalist id="preset-foods"></datalist>
                         </div>
                         <input type="number" id="food-cal" step="any" placeholder="Kalori (kcal)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
                         <input type="number" id="food-protein" step="any" placeholder="Protein (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
                         <input type="number" id="food-carbs" step="any" placeholder="Karb (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
                         <input type="number" id="food-fat" step="any" placeholder="Yağ (g)" required class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
-                        <button type="submit" class="col-span-2 md:col-span-5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 rounded-lg transition-colors cursor-pointer">Listeye Ekle</button>
+                        <button type="submit" class="col-span-2 md:col-span-5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 rounded-lg transition-colors cursor-pointer">Manuel Ekle</button>
                     </form>
                 </div>
 
@@ -249,9 +251,7 @@
 
                 <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
                     <div class="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                        <div>
-                            <h4 class="text-sm font-bold text-zinc-300">Antrenman Geçmişi & Hacim Logları</h4>
-                        </div>
+                        <div><h4 class="text-sm font-bold text-zinc-300">Antrenman Geçmişi & Hacim Logları</h4></div>
                         <div>
                             <select id="analysis-exercise-select" onchange="handleExerciseFilterChange(this.value)" class="bg-zinc-950 border border-zinc-800 text-xs text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 w-full sm:w-48 cursor-pointer">
                                 <option value="all">Tüm Egzersizler</option>
@@ -289,22 +289,65 @@
     <script>
         const TARGETS = { kcal: 2100, protein: 220, carbs: 160, fat: 60 };
 
+        // Manuel seçimler için datalist veritabanı
         const FOOD_DATABASE = {
-            "Haşlanmış Yumurta (1 adet L Boy)": { cal: 75, p: 6.3, c: 0.6, f: 5.3 },
             "Tavuk Göğsü (100g - Pişmiş)": { cal: 165, p: 31.0, c: 0.0, f: 3.6 },
-            "Tavuk Göğsü (100g - Çiğ)": { cal: 120, p: 22.5, c: 0.0, f: 2.5 },
+            "Dana Kıyması (100g - Pişmiş)": { cal: 220, p: 24.0, c: 0.0, f: 14.0 },
+            "Haşlanmış Yumurta (1 adet)": { cal: 75, p: 6.3, c: 0.6, f: 5.3 },
             "Basmati Pirinç (100g - Çiğ)": { cal: 354, p: 8.5, c: 78.5, f: 0.6 },
-            "Yulaf Ezmesi (100g)": { cal: 370, p: 12.5, c: 60.3, f: 7.0 },
-            "Pirinc Patlagi (1 adet)": { cal: 30, p: 0.7, c: 6.5, f: 0.2 },
-            "Whey Protein (1 Ölçek - 30g)": { cal: 118, p: 24.0, c: 1.8, f: 1.2 },
-            "Fıstık Ezmesi (1 Yemek Kaşığı - 20g)": { cal: 125, p: 5.2, c: 4.2, f: 10.1 }
+            "Yulaf Ezmesi (100g)": { cal: 370, p: 12.5, c: 60.3, f: 7.0 }
         };
 
-        const SMART_DB = {
-            "tavuk": { cal: 165, p: 31, c: 0, f: 3.6, unit: "g" },
-            "yumurta": { cal: 75, p: 6.3, c: 0.6, f: 5.3, unit: "adet" },
-            "pirinç": { cal: 130, p: 2.7, c: 28, f: 0.3, unit: "g" },
-            "yulaf": { cal: 370, p: 12.5, c: 60, f: 7, unit: "g" }
+        // [YENİ] Doğal Dil İşleme İçin Dev Sporcu Besin Kütüphanesi
+        const NUTRITION_DICTIONARY = {
+            // Proteinler (100g bazlı değerler)
+            "tavuk göğsü": { cal: 165, p: 31, c: 0, f: 3.6, type: "weight" },
+            "tavuk": { cal: 165, p: 31, c: 0, f: 3.6, type: "weight" },
+            "kıyma": { cal: 220, p: 24, c: 0, f: 14, type: "weight" },
+            "dana kıyma": { cal: 220, p: 24, c: 0, f: 14, type: "weight" },
+            "dana eti": { cal: 240, p: 26, c: 0, f: 15, type: "weight" },
+            "antrikot": { cal: 230, p: 25, c: 0, f: 14, type: "weight" },
+            "et": { cal: 230, p: 25, c: 0, f: 14, type: "weight" },
+            "ton balığı": { cal: 130, p: 28, c: 0, f: 1, type: "weight" },
+            "somon": { cal: 200, p: 20, c: 0, f: 13, type: "weight" },
+            "lor peyniri": { cal: 100, p: 19, c: 3, f: 1.2, type: "weight" },
+            "süzme peynir": { cal: 110, p: 11, c: 3.5, f: 4.5, type: "weight" },
+            "kaşar peyniri": { cal: 350, p: 27, c: 1.5, f: 26, type: "weight" },
+            
+            // Karbonhidratlar (100g bazlı değerler)
+            "basmati pirinç": { cal: 354, p: 8.5, c: 78.5, f: 0.6, type: "weight" },
+            "basmati": { cal: 354, p: 8.5, c: 78.5, f: 0.6, type: "weight" },
+            "pirinç pilavı": { cal: 130, p: 2.7, c: 28, f: 0.3, type: "weight" },
+            "pirinç": { cal: 354, p: 8.5, c: 78.5, f: 0.6, type: "weight" },
+            "yulaf ezmesi": { cal: 370, p: 12.5, c: 60.3, f: 7, type: "weight" },
+            "yulaf": { cal: 370, p: 12.5, c: 60.3, f: 7, type: "weight" },
+            "makarna": { cal: 350, p: 12, c: 72, f: 1.5, type: "weight" },
+            "patates": { cal: 77, p: 2, c: 17, f: 0.1, type: "weight" },
+            "tatlı patates": { cal: 86, p: 1.6, c: 20, f: 0.1, type: "weight" },
+            "tam buğday ekmek": { cal: 240, p: 9, c: 43, f: 2, type: "weight" },
+            "ekmek": { cal: 250, p: 8, c: 49, f: 1.5, type: "weight" },
+            "lavaş": { cal: 280, p: 8, c: 55, f: 3, type: "weight" },
+            
+            // Sağlıklı Yağlar & Ölçekler
+            "fıstık ezmesi": { cal: 600, p: 25, c: 20, f: 50, type: "weight", spoonWeight: 15 },
+            "zeytinyağı": { cal: 884, p: 0, c: 0, f: 100, type: "weight", spoonWeight: 10 },
+            "tereyağı": { cal: 717, p: 0.8, c: 0, f: 81, type: "weight", spoonWeight: 10 },
+            "ceviz": { cal: 654, p: 15, c: 14, f: 65, type: "weight" },
+            "badem": { cal: 579, p: 21, c: 22, f: 50, type: "weight" },
+            
+            // Süt Ürünleri (100ml / 100g bazlı)
+            "süt": { cal: 60, p: 3, c: 4.7, f: 3, type: "weight", glassWeight: 200 },
+            "yoğurt": { cal: 60, p: 3.5, c: 4.5, f: 3.2, type: "weight", spoonWeight: 25 },
+            "süzme yoğurt": { cal: 90, p: 9, c: 4, f: 4.5, type: "weight" },
+
+            // Adet / Ölçek Bazlı Kalıplar (1 Adet Değerleri)
+            "yumurta beyazı": { cal: 17, p: 3.6, c: 0.2, f: 0.1, type: "piece" },
+            "yumurta": { cal: 75, p: 6.3, c: 0.6, f: 5.3, type: "piece" },
+            "muz": { cal: 90, p: 1.1, c: 23, f: 0.3, type: "piece" },
+            "elma": { cal: 52, p: 0.3, c: 14, f: 0.2, type: "piece" },
+            "pirinç patlağı": { cal: 30, p: 0.7, c: 6.5, f: 0.2, type: "piece" },
+            "whey": { cal: 118, p: 24, c: 1.8, f: 1.2, type: "piece" },
+            "protein tozu": { cal: 118, p: 24, c: 1.8, f: 1.2, type: "piece" }
         };
 
         const WORKOUT_DATA = [
@@ -371,7 +414,7 @@
         let isSignUpMode = false;
         let liftHistory = {};
         let customSmartFoods = {};
-        let weightHistory = {}; // [YENİ] Tarih bazlı kilo geçmişi nesnesi {"YYYY-MM-DD": 92.8}
+        let weightHistory = {};
         
         let state = {
             date: new Date().toISOString().split('T')[0],
@@ -381,7 +424,7 @@
 
         let macroChartInstance = null;
         let volumeChartInstance = null;
-        let weightChartInstance = null; // [YENİ] Kilo grafiği referansı
+        let weightChartInstance = null;
 
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -389,9 +432,7 @@
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
                 buildDatalist();
-                
                 await pullUserData();
-                
                 setInterval(checkMidnight, 30000);
             } else {
                 currentUser = null;
@@ -402,43 +443,28 @@
 
         function checkMidnight() {
             const todayStr = new Date().toISOString().split('T')[0];
-            if (typeof window.systemToday === 'undefined') {
-                window.systemToday = todayStr;
-            }
-            
+            if (typeof window.systemToday === 'undefined') window.systemToday = todayStr;
             if (todayStr !== window.systemToday) {
                 const wasLookingAtOldToday = (state.date === window.systemToday);
                 window.systemToday = todayStr;
-                
-                if (wasLookingAtOldToday) {
-                    console.log("⏰ Saat 00:00 oldu! Sistem otomatik olarak yeni güne geçiş yapıyor.");
-                    handleDateSelect(todayStr);
-                } else {
-                    renderDateBar();
-                }
+                if (wasLookingAtOldToday) handleDateSelect(todayStr);
+                else renderDateBar();
             }
         }
 
         function renderDateBar() {
             const container = document.getElementById('date-buttons-bar');
             if (!container) return;
-            
             container.innerHTML = '';
             const today = new Date();
-            
             for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(today.getDate() - i);
                 const dateStr = d.toISOString().split('T')[0];
-                
                 const dayNum = d.getDate();
                 const dayName = d.toLocaleDateString('tr-TR', { weekday: 'short' });
-                
                 const isActive = (state.date === dateStr);
-                const activeClass = isActive 
-                    ? "bg-emerald-600 text-white border-emerald-500 font-bold shadow" 
-                    : "bg-zinc-950 text-zinc-400 border-zinc-800/80 hover:text-zinc-200 hover:border-zinc-700";
-                
+                const activeClass = isActive ? "bg-emerald-600 text-white border-emerald-500 font-bold shadow" : "bg-zinc-950 text-zinc-400 border-zinc-800/80 hover:text-zinc-200 hover:border-zinc-700";
                 container.innerHTML += `
                     <button onclick="handleDateSelect('${dateStr}')" class="flex-1 min-w-[54px] text-center py-1.5 px-2 rounded-xl border text-xs transition-all cursor-pointer ${activeClass}">
                         <span class="block text-[9px] uppercase tracking-wider opacity-60">${dayName}</span>
@@ -446,7 +472,6 @@
                     </button>
                 `;
             }
-            
             const picker = document.getElementById('custom-date-picker');
             if (picker) picker.value = state.date;
         }
@@ -455,18 +480,11 @@
             state.date = targetDate;
             state.cardioDone = false;
             state.foods = [];
-            
             const localState = localStorage.getItem(`hd_local_state_${targetDate}`);
-            if (localState) {
-                state = JSON.parse(localState);
-            }
-            
+            if (localState) state = JSON.parse(localState);
             renderDateBar();
             updateUI();
-            
-            if (!skipCloudSync && currentUser) {
-                await fetchDateDataFromCloud(targetDate);
-            }
+            if (!skipCloudSync && currentUser) await fetchDateDataFromCloud(targetDate);
         }
 
         async function fetchDateDataFromCloud(targetDate) {
@@ -474,89 +492,138 @@
             try {
                 const snapshot = await database.ref(`users/${currentUser.uid}/dailyLogs/${targetDate}`).once('value');
                 if (snapshot.exists()) {
-                    const cloudState = snapshot.val();
-                    if (state.date === targetDate) {
-                        state = cloudState;
-                        if (!state.foods) state.foods = [];
-                        localStorage.setItem(`hd_local_state_${targetDate}`, JSON.stringify(state));
-                        updateUI();
-                    }
-                } else {
-                    if (state.date === targetDate && !localStorage.getItem(`hd_local_state_${targetDate}`)) {
-                        state.cardioDone = false;
-                        state.foods = [];
-                        updateUI();
-                    }
+                    state = snapshot.val();
+                    if (!state.foods) state.foods = [];
+                    localStorage.setItem(`hd_local_state_${targetDate}`, JSON.stringify(state));
+                    updateUI();
                 }
-            } catch (err) {
-                console.error("Buluttan tarih verisi çekme hatası:", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        function handleCustomDateChange(val) {
-            if (!val) return;
-            handleDateSelect(val);
-        }
+        function handleCustomDateChange(val) { if (val) handleDateSelect(val); }
 
+        // [SÜPER GÜNCELLEME] NLP Tabanlı Akıllı Doğal Dil Makro Ekleme Motoru
         function addSmartFood() {
-            const input = document.getElementById('smart-food-input').value.toLowerCase();
-            const match = input.match(/(\d+)\s*(g|gram|adet|tane)?\s*(.*)/);
-            
-            if (!match) { alert("Anlayamadım! '300g tavuk' veya '1 adet tam buğday lavaş' gibi yaz."); return; }
+            const rawInput = document.getElementById('smart-food-input').value.trim().toLowerCase();
+            if (!rawInput) return;
 
-            const amount = parseInt(match[1]);
-            const foodName = match[3].trim();
-            
-            let dbItem = Object.keys(SMART_DB).find(key => foodName.includes(key));
-            let base = null;
-            let matchedKey = "";
+            // Cümledeki ilk sayıyı bul
+            const numbers = rawInput.match(/\d+(\.\d+)?/g);
+            if (!numbers) {
+                alert("Lütfen bir miktar belirtin! (Örn: 3 yumurta veya 300g tavuk)");
+                return;
+            }
+            const amount = parseFloat(numbers[0]);
 
-            if (dbItem) {
-                base = SMART_DB[dbItem];
-                matchedKey = dbItem;
-            } else {
-                dbItem = Object.keys(customSmartFoods).find(key => foodName.includes(key));
-                if (dbItem) {
-                    base = customSmartFoods[dbItem];
-                    matchedKey = dbItem;
+            // Birim algılama mekanizması
+            let unit = "g"; // varsayılan gram
+            if (rawInput.includes("adet") || rawInput.includes("tane") || rawInput.includes("ölçek")) {
+                unit = "piece";
+            } else if (rawInput.includes("kaşık") || rawInput.includes("yemek kaşığı")) {
+                unit = "spoon";
+            } else if (rawInput.includes("bardak")) {
+                unit = "glass";
+            } else if (rawInput.includes("g") || rawInput.includes("gram")) {
+                unit = "g";
+            }
+
+            // Kütüphaneden en uzun ve en doğru kelimeyi eşleştir (Yumurta Beyazı -> Yumurta çakışmasını önler)
+            let matchedKey = null;
+            const sortedKeys = Object.keys(NUTRITION_DICTIONARY).sort((a, b) => b.length - a.length);
+            
+            for (let key of sortedKeys) {
+                if (rawInput.includes(key)) {
+                    matchedKey = key;
+                    break;
                 }
             }
 
-            if (!base) {
-                const confirmNew = confirm(`"${foodName}" akıllı hafızada bulunamadı. Değerlerini bir defalık girerek sisteme öğretmek ister misiniz?`);
+            // Eğer ana kütüphanede yoksa, kullanıcının önceden öğrettiği özel besinlere bak
+            if (!matchedKey) {
+                const sortedCustomKeys = Object.keys(customSmartFoods).sort((a, b) => b.length - a.length);
+                for (let key of sortedCustomKeys) {
+                    if (rawInput.includes(key.toLowerCase())) {
+                        matchedKey = key;
+                        break;
+                    }
+                }
+            }
+
+            // Besin hiç bulunamadıysa akıllı öğretme modunu tetikle
+            if (!matchedKey) {
+                let guessedName = rawInput.replace(/\d+(\.\d+)?/g, '').replace(/(gram|g|adet|tane|ölçek|kaşık|yemek kaşığı|bardak)/g, '').trim();
+                if(!guessedName) guessedName = "Bilinmeyen Besin";
+                
+                const confirmNew = confirm(`"${guessedName}" akıllı hafızada bulunamadı. Değerlerini sisteme bir kereye mahsus öğretmek ister misiniz?`);
                 if (!confirmNew) return;
 
-                const unit = prompt("Birim türü nedir? (Sadece 'g' veya 'adet' yazın):", "adet");
-                if (unit !== "g" && unit !== "adet") { alert("Geçersiz birim! İptal edildi."); return; }
+                const selectedUnit = prompt("Birim türü nedir? (Gramajlı besinler için 'g', tane hesabı için 'adet' yazın):", "g");
+                if (selectedUnit !== "g" && selectedUnit !== "adet") { alert("Geçersiz birim!"); return; }
 
-                const promptTarget = unit === "g" ? "100g" : "1 adet";
-                const cal = parseFloat(prompt(`${foodName} (${promptTarget}) için Kalori (kcal):`));
-                const p = parseFloat(prompt(`${foodName} (${promptTarget}) için Protein (g):`));
-                const c = parseFloat(prompt(`${foodName} (${promptTarget}) için Karbonhidrat (g):`));
-                const f = parseFloat(prompt(`${foodName} (${promptTarget}) için Yağ (g):`));
+                const promptTarget = selectedUnit === "g" ? "100g" : "1 adet";
+                const cal = parseFloat(prompt(`${guessedName} (${promptTarget}) için Kalori (kcal):`));
+                const p = parseFloat(prompt(`${guessedName} (${promptTarget}) için Protein (g):`));
+                const c = parseFloat(prompt(`${guessedName} (${promptTarget}) için Karbonhidrat (g):`));
+                const f = parseFloat(prompt(`${guessedName} (${promptTarget}) için Yağ (g):`));
 
                 if (isNaN(cal) || isNaN(p) || isNaN(c) || isNaN(f)) {
-                    alert("Hatalı veya eksik değer girdiniz. Kayıt başarısız.");
+                    alert("Hatalı değerler girildi. İşlem iptal edildi.");
                     return;
                 }
 
-                customSmartFoods[foodName] = { cal, p, c, f, unit };
+                customSmartFoods[guessedName] = { 
+                    cal, p, c, f, 
+                    type: selectedUnit === "g" ? "weight" : "piece" 
+                };
                 
                 if (currentUser) {
-                    database.ref(`users/${currentUser.uid}/customSmartFoods/${foodName}`).set(customSmartFoods[foodName]);
+                    database.ref(`users/${currentUser.uid}/customSmartFoods/${guessedName}`).set(customSmartFoods[guessedName]);
                 }
-
-                base = customSmartFoods[foodName];
-                matchedKey = foodName;
+                matchedKey = guessedName;
             }
 
-            const multiplier = base.unit === "g" ? amount / 100 : amount;
+            const base = NUTRITION_DICTIONARY[matchedKey] || customSmartFoods[matchedKey];
+            let multiplier = 1;
+
+            // Gram bazlı (Ağırlık) besinlerde çarpan hesabı
+            if (base.type === "weight") {
+                if (unit === "spoon" && base.spoonWeight) {
+                    multiplier = (amount * base.spoonWeight) / 100;
+                } else if (unit === "glass" && base.glassWeight) {
+                    multiplier = (amount * base.glassWeight) / 100;
+                } else if (unit === "piece") {
+                    if (matchedKey.includes("ekmek")) multiplier = (amount * 25) / 100; // 1 dilim ~25g
+                    else if (matchedKey.includes("lavaş")) multiplier = (amount * 60) / 100; // 1 lavaş ~60g
+                    else multiplier = amount; // Varsayılan 1 adet = 100g kabul edilir
+                } else {
+                    // Kullanıcı birim belirtmeden direkt küçük sayı yazdıysa ("3 tavuk" gibi) otomatik parça algıla
+                    if (amount < 15 && !rawInput.includes("g") && !rawInput.includes("gram")) {
+                        if (matchedKey.includes("ekmek")) multiplier = (amount * 25) / 100;
+                        else if (matchedKey.includes("lavaş")) multiplier = (amount * 60) / 100;
+                        else multiplier = amount;
+                    } else {
+                        multiplier = amount / 100; // Standart gramaj / 100g
+                    }
+                }
+            } 
+            // Adet bazlı besinlerde çarpan hesabı (Yumurta, Muz vb.)
+            else if (base.type === "piece") {
+                if (unit === "g" || unit === "gram") {
+                    if (matchedKey.includes("yumurta")) multiplier = amount / 50; // 1 yumurta ~50g kabul edilir
+                    else multiplier = amount / 100;
+                } else {
+                    multiplier = amount;
+                }
+            }
 
             if (!state.foods) state.foods = [];
             
+            const displayUnit = unit === 'piece' ? 'adet' : unit === 'spoon' ? 'kaşık' : unit === 'glass' ? 'bardak' : 'g';
+            const finalFoodName = `${amount}${displayUnit} ${matchedKey}`;
+            
             state.foods.push({
                 id: Date.now(),
-                name: `${amount}${base.unit} ${matchedKey}`,
+                name: finalFoodName.charAt(0).toUpperCase() + finalFoodName.slice(1),
                 cal: Math.round(base.cal * multiplier),
                 p: Math.round(base.p * multiplier),
                 c: Math.round(base.c * multiplier),
@@ -580,47 +647,32 @@
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-
             try {
                 if (isSignUpMode) {
                     await auth.createUserWithEmailAndPassword(email, password);
-                    alert("Hesabın başarıyla oluşturuldu ve Firebase'e bağlandı!");
+                    alert("Hesap başarıyla oluşturuldu!");
                 } else {
                     await auth.signInWithEmailAndPassword(email, password);
                 }
-            } catch (error) {
-                alert("Hata: " + error.message);
-            }
+            } catch (error) { alert("Hata: " + error.message); }
         }
 
-        function handleLogout() {
-            auth.signOut();
-            localStorage.clear();
-        }
+        function handleLogout() { auth.signOut(); localStorage.clear(); }
 
         async function pullUserData() {
             const localLift = localStorage.getItem('hd_local_liftHistory');
             const localCustom = localStorage.getItem('hd_local_customSmartFoods');
-            const localWeight = localStorage.getItem('hd_local_weightHistory'); // [YENİ]
+            const localWeight = localStorage.getItem('hd_local_weightHistory');
 
             if (localLift) liftHistory = JSON.parse(localLift);
             if (localCustom) customSmartFoods = JSON.parse(localCustom);
-            if (localWeight) weightHistory = JSON.parse(localWeight); // [YENİ]
-
-            Object.keys(liftHistory).forEach(ex => {
-                if (ex.includes('/')) {
-                    const safeKey = ex.replace(/\s*\/\s*/g, ' - ');
-                    liftHistory[safeKey] = liftHistory[ex];
-                    delete liftHistory[ex];
-                }
-            });
+            if (localWeight) weightHistory = JSON.parse(localWeight);
 
             renderWorkoutMatrix();
             renderDashboardPRs();
             renderAnalysis();
 
             window.systemToday = new Date().toISOString().split('T')[0];
-            
             await handleDateSelect(state.date, true);
 
             if (!currentUser) return;
@@ -630,13 +682,6 @@
                 const liftSnapshot = await database.ref(`users/${uid}/liftHistory`).once('value');
                 if (liftSnapshot.exists()) {
                     liftHistory = liftSnapshot.val();
-                    Object.keys(liftHistory).forEach(ex => {
-                        if (ex.includes('/')) {
-                            const safeKey = ex.replace(/\s*\/\s*/g, ' - ');
-                            liftHistory[safeKey] = liftHistory[ex];
-                            delete liftHistory[ex];
-                        }
-                    });
                     localStorage.setItem('hd_local_liftHistory', JSON.stringify(liftHistory));
                 }
 
@@ -646,7 +691,6 @@
                     localStorage.setItem('hd_local_customSmartFoods', JSON.stringify(customSmartFoods));
                 }
 
-                // [YENİ] Kilo geçmişini buluttan çek
                 const weightSnapshot = await database.ref(`users/${uid}/weightHistory`).once('value');
                 if (weightSnapshot.exists()) {
                     weightHistory = weightSnapshot.val();
@@ -654,32 +698,25 @@
                 }
 
                 await fetchDateDataFromCloud(state.date);
-
                 renderWorkoutMatrix();
                 renderDashboardPRs();
                 renderAnalysis();
-            } catch (err) {
-                console.log("⚠️ Salon bağlantısı zayıf veya çevrimdışı. Yerel disk aktif.", err);
-            }
+            } catch (err) { console.log("Çevrimdışı disk aktif.", err); }
         }
 
         async function pushStateToCloud() {
             localStorage.setItem('hd_local_liftHistory', JSON.stringify(liftHistory));
             localStorage.setItem('hd_local_customSmartFoods', JSON.stringify(customSmartFoods));
-            localStorage.setItem('hd_local_weightHistory', JSON.stringify(weightHistory)); // [YENİ]
+            localStorage.setItem('hd_local_weightHistory', JSON.stringify(weightHistory));
             localStorage.setItem(`hd_local_state_${state.date}`, JSON.stringify(state));
 
             if (!currentUser) return;
             const uid = currentUser.uid;
-
             try {
                 await database.ref(`users/${uid}/liftHistory`).set(liftHistory);
-                await database.ref(`users/${uid}/weightHistory`).set(weightHistory); // [YENİ]
+                await database.ref(`users/${uid}/weightHistory`).set(weightHistory);
                 await database.ref(`users/${uid}/dailyLogs/${state.date}`).set(state);
-                console.log(`☁️ Veriler buluta eşitlendi (${state.date})`);
-            } catch (err) {
-                console.error("☁️ Bulut eşitlemesi başarısız.", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
         function buildDatalist() {
@@ -690,9 +727,9 @@
         function handlePresetSelection(value) {
             if (FOOD_DATABASE[value]) {
                 document.getElementById('food-cal').value = FOOD_DATABASE[value].cal;
-                document.getElementById('food-protein').value = FOOD_DATABASE[value].p;
-                document.getElementById('food-carbs').value = FOOD_DATABASE[value].c;
-                document.getElementById('food-fat').value = FOOD_DATABASE[value].f;
+                document.getElementById('food-protein').value = FOOD_DATABASE[value].protein;
+                document.getElementById('food-carbs').value = FOOD_DATABASE[value].carbs;
+                document.getElementById('food-fat').value = FOOD_DATABASE[value].fat;
             }
         }
 
@@ -712,36 +749,23 @@
 
             if (tabName === 'analysis') {
                 updateVolumeChart(document.getElementById('analysis-exercise-select').value);
-                updateWeightChart(); // [YENİ] Analiz sekmesine geçince grafiği tetikle
-            }
-        }
-
-        function toggleCardio() {
-            state.cardioDone = document.getElementById('cardio-checkbox').checked;
-            pushStateToCloud();
-        }
-
-        // [YENİ] Kilo Kaydetme Fonksiyonu (Seçili güne kaydeder)
-        function submitWeight() {
-            const input = document.getElementById('weight-input');
-            const value = parseFloat(input.value);
-            
-            if (!value || isNaN(value) || value <= 0) {
-                alert("Lütfen geçerli bir kilo değeri girin! (Örn: 92.8)");
-                return;
-            }
-
-            weightHistory[state.date] = value;
-            input.value = '';
-            
-            updateUI();
-            pushStateToCloud();
-            if(!document.getElementById('content-analysis').classList.contains('hidden')) {
                 updateWeightChart();
             }
         }
 
-        // [YENİ] Tarih bazlı kilo logu silme fonksiyonu
+        function toggleCardio() { state.cardioDone = document.getElementById('cardio-checkbox').checked; pushStateToCloud(); }
+
+        function submitWeight() {
+            const input = document.getElementById('weight-input');
+            const value = parseFloat(input.value);
+            if (!value || isNaN(value) || value <= 0) { alert("Geçerli bir kilo girin!"); return; }
+            weightHistory[state.date] = value;
+            input.value = '';
+            updateUI();
+            pushStateToCloud();
+            if(!document.getElementById('content-analysis').classList.contains('hidden')) updateWeightChart();
+        }
+
         function removeWeight(dateKey) {
             if (confirm(`${dateKey} tarihli kilo kaydını silmek istiyor musunuz?`)) {
                 delete weightHistory[dateKey];
@@ -754,35 +778,22 @@
         function renderWorkoutMatrix() {
             const container = document.getElementById('workout-container');
             if (!container) return;
-
             container.innerHTML = WORKOUT_DATA.map(day => {
                 return `
                 <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
-                    <div class="px-4 py-3 bg-zinc-800/40 border-b border-zinc-800 font-semibold text-sm text-zinc-200">
-                        <span>${day.name}</span>
-                    </div>
+                    <div class="px-4 py-3 bg-zinc-800/40 border-b border-zinc-800 font-semibold text-sm text-zinc-200"><span>${day.name}</span></div>
                     <div class="p-3 divide-y divide-zinc-800/60">
                         ${day.exercises.map((ex, index) => {
                             const rawHistory = liftHistory[ex.name];
                             let history = [];
-                            if (rawHistory) {
-                                history = Array.isArray(rawHistory) ? rawHistory : Object.values(rawHistory);
-                            }
-                            
+                            if (rawHistory) history = Array.isArray(rawHistory) ? rawHistory : Object.values(rawHistory);
                             let trackingHTML = `<span class="text-[11px] text-zinc-500 block">Henüz kayıt yok</span>`;
-                            
                             if (history.length > 0) {
                                 const cleanHistory = history.filter(h => h && typeof h === 'object');
-                                
                                 if (cleanHistory.length > 0) {
                                     const last = cleanHistory[cleanHistory.length - 1];
                                     let pr = cleanHistory[0];
-                                    cleanHistory.forEach(h => { 
-                                        if (h && (h.weight > pr.weight || (h.weight === pr.weight && h.reps > pr.reps))) {
-                                            pr = h; 
-                                        }
-                                    });
-
+                                    cleanHistory.forEach(h => { if (h && (h.weight > pr.weight || (h.weight === pr.weight && h.reps > pr.reps))) pr = h; });
                                     trackingHTML = `
                                         <div class="flex gap-2 text-[11px] mt-0.5">
                                             <span class="text-zinc-400">Son: <strong class="text-zinc-200">${last.weight}kg x ${last.reps}</strong></span>
@@ -792,7 +803,6 @@
                                     `;
                                 }
                             }
-
                             return `
                             <div class="py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                                 <div>
@@ -805,28 +815,20 @@
                                     <input type="number" id="reps-${day.id}-${index}" placeholder="Tekrar" class="w-16 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200 font-mono">
                                     <button onclick="saveLift('${ex.name}', 'weight-${day.id}-${index}', 'reps-${day.id}-${index}')" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-xs font-semibold text-white cursor-pointer">Kaydet</button>
                                 </div>
-                            </div>
-                            `;
+                            </div>`;
                         }).join('')}
                     </div>
-                </div>
-                `;
+                </div>`;
             }).join('');
         }
 
         function saveLift(exercise, weightId, repsId) {
             const weight = parseFloat(document.getElementById(weightId).value);
             const reps = parseInt(document.getElementById(repsId).value);
-
             if (!weight || !reps) { alert("Değerleri girin!"); return; }
-
             const safeExercise = exercise.replace(/\s*\/\s*/g, ' - ');
-
-            if (!liftHistory[safeExercise]) {
-                liftHistory[safeExercise] = [];
-            } else if (!Array.isArray(liftHistory[safeExercise])) {
-                liftHistory[safeExercise] = Object.values(liftHistory[safeExercise]);
-            }
+            if (!liftHistory[safeExercise]) liftHistory[safeExercise] = [];
+            else if (!Array.isArray(liftHistory[safeExercise])) liftHistory[safeExercise] = Object.values(liftHistory[safeExercise]);
             
             let isPr = true;
             if(liftHistory[safeExercise].length > 0) {
@@ -844,7 +846,6 @@
 
             document.getElementById(weightId).value = '';
             document.getElementById(repsId).value = '';
-
             renderWorkoutMatrix();
             renderDashboardPRs();
             renderAnalysis();
@@ -866,21 +867,17 @@
         function renderDashboardPRs() {
             const container = document.getElementById('dashboard-pr-container');
             if (!container) return;
-            
             let allPrs = [];
             Object.keys(liftHistory).forEach(ex => {
-                const raw = liftHistory[ex];
-                const list = Array.isArray(raw) ? raw : Object.values(raw);
+                const list = Array.isArray(liftHistory[ex]) ? liftHistory[ex] : Object.values(liftHistory[ex]);
                 list.forEach(log => { if (log && log.isPr) allPrs.push({ exercise: ex, ...log }); });
             });
             allPrs.sort((a, b) => b.timestamp - a.timestamp);
             const recent = allPrs.slice(0, 3);
-
             if (recent.length === 0) {
                 container.innerHTML = `<div class="text-center py-2 text-xs text-zinc-500">Henüz rekor kaydı yok.</div>`;
                 return;
             }
-
             container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">` + recent.map(pr => `
                 <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800 flex flex-col justify-between">
                     <div><span class="text-[10px] text-zinc-500 font-mono block">${pr.date}</span>
@@ -895,7 +892,6 @@
         function renderAnalysis() {
             const filterSelect = document.getElementById('analysis-exercise-select');
             const selected = filterSelect ? filterSelect.value : 'all';
-            
             let selectHTML = `<option value="all">Tüm Egzersizler</option>`;
             Object.keys(liftHistory).forEach(ex => { selectHTML += `<option value="${ex}" ${selected === ex ? 'selected' : ''}>${ex}</option>`; });
             if (filterSelect) filterSelect.innerHTML = selectHTML;
@@ -906,8 +902,7 @@
             } else {
                 if (prContainer) {
                     prContainer.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">` + Object.keys(liftHistory).map(ex => {
-                        const raw = liftHistory[ex];
-                        const list = (Array.isArray(raw) ? raw : Object.values(raw)).filter(h => h);
+                        const list = (Array.isArray(liftHistory[ex]) ? liftHistory[ex] : Object.values(liftHistory[ex])).filter(h => h);
                         if (list.length === 0) return '';
                         let pr = list[0];
                         list.forEach(h => { if (h.weight > pr.weight) pr = h; });
@@ -921,27 +916,20 @@
             renderHistoryTable(selected);
         }
 
-        function handleExerciseFilterChange(value) {
-            renderHistoryTable(value);
-            updateVolumeChart(value);
-        }
+        function handleExerciseFilterChange(value) { renderHistoryTable(value); updateVolumeChart(value); }
 
         function renderHistoryTable(filter = 'all') {
             const tbody = document.getElementById('history-table-body');
             if (!tbody) return;
             tbody.innerHTML = '';
-            
             let logs = [];
-            Object.keys(liftHistory).forEach(ex => { 
-                const raw = liftHistory[ex];
-                const list = Array.isArray(raw) ? raw : Object.values(raw);
-                list.forEach(l => { if (l) logs.push({ exercise: ex, ...l }); }); 
+            Object.keys(liftHistory).forEach(ex => {
+                const list = Array.isArray(liftHistory[ex]) ? liftHistory[ex] : Object.values(liftHistory[ex]);
+                list.forEach(l => { if (l) logs.push({ exercise: ex, ...l }); });
             });
             logs.sort((a, b) => b.timestamp - a.timestamp);
-
             if (filter !== 'all') logs = logs.filter(l => l.exercise === filter);
             if (logs.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-xs text-zinc-500">Kayıt yok.</td></tr>`; return; }
-
             logs.forEach(l => {
                 tbody.innerHTML += `
                     <tr class="border-b border-zinc-800/60 font-mono text-xs hover:bg-zinc-900/30">
@@ -972,28 +960,20 @@
             pushStateToCloud();
         }
 
-        function removeFood(id) {
-            state.foods = state.foods.filter(f => f.id !== id);
-            updateUI();
-            pushStateToCloud();
-        }
+        function removeFood(id) { state.foods = state.foods.filter(f => f.id !== id); updateUI(); pushStateToCloud(); }
 
         function clearDay() {
             if (confirm("Seçili günün makrolarını sıfırlamak istiyor musun?")) {
-                state.foods = [];
-                state.cardioDone = false;
+                state.foods = []; state.cardioDone = false;
                 document.getElementById('cardio-checkbox').checked = false;
-                updateUI();
-                pushStateToCloud();
+                updateUI(); pushStateToCloud();
             }
         }
 
         function updateUI() {
             let tc = 0, tp = 0, tcrb = 0, tf = 0;
             const tbody = document.getElementById('food-table-body');
-            
             if (!state.foods) state.foods = [];
-
             if(tbody) {
                 tbody.innerHTML = state.foods.length === 0 ? `<tr><td colspan="6" class="text-center py-4 text-xs text-zinc-500">Bu tarihe ait besin kaydı bulunamadı.</td></tr>` : '';
                 state.foods.forEach(f => {
@@ -1018,47 +998,35 @@
             const cardioCheck = document.getElementById('cardio-checkbox');
             if (cardioCheck) cardioCheck.checked = state.cardioDone || false;
 
-            // [YENİ] Seçili günün kilosu varsa Dashboard'da göster, yoksa tire koy
             const dayWeight = weightHistory[state.date];
             document.getElementById('dashboard-current-weight').innerText = dayWeight ? dayWeight.toFixed(1) : '-';
 
-            // [YENİ] Kilo log tablosunu render et
             renderWeightHistoryTable();
 
             const parsedDate = new Date(state.date + "T00:00:00");
-            const dynamicDateStr = parsedDate.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            
-            document.getElementById('current-date-str').innerText = dynamicDateStr;
+            document.getElementById('current-date-str').innerText = parsedDate.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             const tableTitle = document.getElementById('table-date-title');
             if(tableTitle) tableTitle.innerText = `Tüketilen Besinler (${parsedDate.toLocaleDateString('tr-TR', {day:'numeric', month:'short'})})`;
 
             updateMacroDonutChart(tp, tcrb, tf);
         }
 
-        // [YENİ] Kilo Log Tablosunu Oluşturan Yardımcı Fonksiyon
         function renderWeightHistoryTable() {
             const tbody = document.getElementById('weight-history-tbody');
             if (!tbody) return;
-            
             const sortedDates = Object.keys(weightHistory).sort((a, b) => new Date(b) - new Date(a));
-            
             if (sortedDates.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-xs text-zinc-500">Kilo kaydı bulunamadı.</td></tr>`;
                 return;
             }
-
             tbody.innerHTML = sortedDates.map(dateKey => {
                 const d = new Date(dateKey + "T00:00:00");
-                const formattedDate = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
                 return `
                     <tr class="border-b border-zinc-800/60 font-mono text-xs hover:bg-zinc-900/20">
-                        <td class="px-4 py-2 text-zinc-400 font-sans">${formattedDate}</td>
+                        <td class="px-4 py-2 text-zinc-400 font-sans">${d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                         <td class="px-4 py-2 text-center text-emerald-400 font-bold">${weightHistory[dateKey].toFixed(1)} kg</td>
-                        <td class="px-4 py-2 text-center">
-                            <button onclick="removeWeight('${dateKey}')" class="text-red-500 hover:text-red-400 font-sans cursor-pointer">Sil</button>
-                        </td>
-                    </tr>
-                `;
+                        <td class="px-4 py-2 text-center"><button onclick="removeWeight('${dateKey}')" class="text-red-500 hover:text-red-400 font-sans cursor-pointer">Sil</button></td>
+                    </tr>`;
             }).join('');
         }
 
@@ -1068,7 +1036,6 @@
             const total = p + c + f;
             const data = total > 0 ? [p, c, f] : [1, 1, 1];
             const colors = total > 0 ? ['#34d399', '#f59e0b', '#f87171'] : ['#27272a', '#27272a', '#27272a'];
-
             if (macroChartInstance) {
                 macroChartInstance.data.datasets[0].data = data;
                 macroChartInstance.data.datasets[0].backgroundColor = colors;
@@ -1086,16 +1053,11 @@
             const card = document.getElementById('volume-chart-card');
             if (exercise === 'all' || !liftHistory[exercise]) { if(card) card.classList.add('hidden'); return; }
             if(card) card.classList.remove('hidden');
-            
             document.getElementById('volume-chart-title').innerText = `📈 ${exercise} - Toplam Hacim Gelişimi (kg)`;
-            
-            const raw = liftHistory[exercise];
-            const list = Array.isArray(raw) ? raw : Object.values(raw);
+            const list = Array.isArray(liftHistory[exercise]) ? liftHistory[exercise] : Object.values(liftHistory[exercise]);
             const sorted = list.filter(l => l).sort((a,b) => a.timestamp - b.timestamp);
-            
             const labels = sorted.map(l => l.date);
             const volumes = sorted.map(l => l.weight * l.reps);
-
             const ctx = document.getElementById('volumeLineChart');
             if (volumeChartInstance) {
                 volumeChartInstance.data.labels = labels;
@@ -1110,18 +1072,15 @@
             }
         }
 
-        // [YENİ] Kilo Trend Çizgi Grafiğini Çizen ve Güncelleyen Motor (Zaman Sıralı)
         function updateWeightChart() {
             const ctx = document.getElementById('weightLineChart');
             if (!ctx) return;
-
             const sortedDates = Object.keys(weightHistory).sort((a, b) => new Date(a) - new Date(b));
             const weights = sortedDates.map(date => weightHistory[date]);
             const labels = sortedDates.map(date => {
                 const d = new Date(date + "T00:00:00");
                 return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
             });
-
             if (weightChartInstance) {
                 weightChartInstance.data.labels = labels;
                 weightChartInstance.data.datasets[0].data = weights;
@@ -1147,14 +1106,8 @@
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
                         scales: {
-                            y: {
-                                grid: { color: 'rgba(63, 63, 70, 0.2)' },
-                                ticks: { color: '#a1a1aa', font: { family: 'Monospace', size: 11 } }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { color: '#a1a1aa', font: { size: 10 } }
-                            }
+                            y: { grid: { color: 'rgba(63, 63, 70, 0.2)' }, ticks: { color: '#a1a1aa', font: { family: 'Monospace', size: 11 } } },
+                            x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 10 } } }
                         }
                     }
                 });
