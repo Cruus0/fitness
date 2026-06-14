@@ -12,7 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         /* Gün seçici çubuğun kaydırma çubuklarını gizle */
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -49,7 +49,7 @@
     <div id="app-screen" class="hidden flex flex-col min-h-screen">
         <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-40 px-4 py-3 flex justify-between items-center">
             <div>
-                <h1 class="text-lg font-bold text-emerald-500 tracking-wide">HYPER-DRIVE v1.5</h1>
+                <h1 class="text-lg font-bold text-emerald-500 tracking-wide">HYPER-DRIVE v1.6</h1>
                 <p class="text-xs text-zinc-400">Hedef: -5 KG Yağ Yakımı (Temmuz Ortası)</p>
             </div>
             <div class="flex items-center gap-3">
@@ -77,7 +77,7 @@
             </div>
 
             <section id="content-dashboard" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
                         <div>
                             <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">Bugünkü Farmakoloji Protokolü</h3>
@@ -98,6 +98,17 @@
                             <input type="checkbox" id="cardio-checkbox" onchange="toggleCardio()" class="sr-only peer">
                             <div class="w-14 h-7 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600 peer-checked:after:bg-white"></div>
                         </label>
+                    </div>
+
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400">Sabah Aç Karnına Kilo</h3>
+                            <p class="text-xs text-zinc-500 mt-1">Seçili Gün: <span id="dashboard-current-weight" class="font-bold text-emerald-400 font-mono">-</span> kg</p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <input type="number" id="weight-input" step="0.1" placeholder="00.0" class="w-16 bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
+                            <button onclick="submitWeight()" class="bg-emerald-600 hover:bg-emerald-500 px-2.5 py-1.5 rounded text-xs font-semibold text-white cursor-pointer transition-colors">Kaydet</button>
+                        </div>
                     </div>
                 </div>
 
@@ -198,6 +209,32 @@
             </section>
 
             <section id="content-analysis" class="hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2 bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4 shadow-md">
+                        <h3 class="text-md font-bold text-zinc-200">📉 Kilo Değişim Trendi</h3>
+                        <div class="h-64 w-full relative">
+                            <canvas id="weightLineChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden flex flex-col shadow-md">
+                        <div class="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800">
+                            <h4 class="text-sm font-bold text-zinc-300">Kilo Geçmişi & Logları</h4>
+                        </div>
+                        <div class="overflow-y-auto max-h-64 flex-1 no-scrollbar">
+                            <table class="w-full text-left text-sm text-zinc-400">
+                                <thead class="bg-zinc-950 text-xs text-zinc-50 uppercase border-b border-zinc-800 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-2">Tarih</th>
+                                        <th class="px-4 py-2 text-center">Kilo</th>
+                                        <th class="px-4 py-2 text-center">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weight-history-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
                     <h3 class="text-md font-bold text-zinc-200">📈 Tüm Egzersizlerin En İyi Dereceleri (PR)</h3>
                     <div id="pr-summary-container"></div>
@@ -334,8 +371,8 @@
         let isSignUpMode = false;
         let liftHistory = {};
         let customSmartFoods = {};
+        let weightHistory = {}; // [YENİ] Tarih bazlı kilo geçmişi nesnesi {"YYYY-MM-DD": 92.8}
         
-        // State yapısı artık aktif olarak izlenen güne ait verileri tutar
         let state = {
             date: new Date().toISOString().split('T')[0],
             cardioDone: false,
@@ -344,6 +381,7 @@
 
         let macroChartInstance = null;
         let volumeChartInstance = null;
+        let weightChartInstance = null; // [YENİ] Kilo grafiği referansı
 
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -354,7 +392,6 @@
                 
                 await pullUserData();
                 
-                // Gece yarısı takibi için kronometreyi başlat (Her 30 saniyede bir kontrol eder)
                 setInterval(checkMidnight, 30000);
             } else {
                 currentUser = null;
@@ -363,7 +400,6 @@
             }
         });
 
-        // [YENİ] Gece yarısı (00:00) geçişini yakalayan motor
         function checkMidnight() {
             const todayStr = new Date().toISOString().split('T')[0];
             if (typeof window.systemToday === 'undefined') {
@@ -383,7 +419,6 @@
             }
         }
 
-        // [YENİ] Tarih barını oluşturan fonksiyon (Son 7 günü yuvarlar)
         function renderDateBar() {
             const container = document.getElementById('date-buttons-bar');
             if (!container) return;
@@ -416,13 +451,11 @@
             if (picker) picker.value = state.date;
         }
 
-        // [YENİ] Kullanıcı tarih değiştirdiğinde tetiklenen yükleyici mekanizma
         async function handleDateSelect(targetDate, skipCloudSync = false) {
             state.date = targetDate;
             state.cardioDone = false;
             state.foods = [];
             
-            // Önce yerel hafızadaki önbelleğe bak
             const localState = localStorage.getItem(`hd_local_state_${targetDate}`);
             if (localState) {
                 state = JSON.parse(localState);
@@ -436,7 +469,6 @@
             }
         }
 
-        // [YENİ] Seçilen spesifik güne ait makroları Firebase'den asenkron çeken motor
         async function fetchDateDataFromCloud(targetDate) {
             if (!currentUser) return;
             try {
@@ -569,9 +601,11 @@
         async function pullUserData() {
             const localLift = localStorage.getItem('hd_local_liftHistory');
             const localCustom = localStorage.getItem('hd_local_customSmartFoods');
+            const localWeight = localStorage.getItem('hd_local_weightHistory'); // [YENİ]
 
             if (localLift) liftHistory = JSON.parse(localLift);
             if (localCustom) customSmartFoods = JSON.parse(localCustom);
+            if (localWeight) weightHistory = JSON.parse(localWeight); // [YENİ]
 
             Object.keys(liftHistory).forEach(ex => {
                 if (ex.includes('/')) {
@@ -587,7 +621,6 @@
 
             window.systemToday = new Date().toISOString().split('T')[0];
             
-            // İlk açılışta aktif güne göre arayüzü tetikle
             await handleDateSelect(state.date, true);
 
             if (!currentUser) return;
@@ -613,7 +646,13 @@
                     localStorage.setItem('hd_local_customSmartFoods', JSON.stringify(customSmartFoods));
                 }
 
-                // Aktif seçili tarihin verisini bulutla senkronize et
+                // [YENİ] Kilo geçmişini buluttan çek
+                const weightSnapshot = await database.ref(`users/${uid}/weightHistory`).once('value');
+                if (weightSnapshot.exists()) {
+                    weightHistory = weightSnapshot.val();
+                    localStorage.setItem('hd_local_weightHistory', JSON.stringify(weightHistory));
+                }
+
                 await fetchDateDataFromCloud(state.date);
 
                 renderWorkoutMatrix();
@@ -627,6 +666,7 @@
         async function pushStateToCloud() {
             localStorage.setItem('hd_local_liftHistory', JSON.stringify(liftHistory));
             localStorage.setItem('hd_local_customSmartFoods', JSON.stringify(customSmartFoods));
+            localStorage.setItem('hd_local_weightHistory', JSON.stringify(weightHistory)); // [YENİ]
             localStorage.setItem(`hd_local_state_${state.date}`, JSON.stringify(state));
 
             if (!currentUser) return;
@@ -634,6 +674,7 @@
 
             try {
                 await database.ref(`users/${uid}/liftHistory`).set(liftHistory);
+                await database.ref(`users/${uid}/weightHistory`).set(weightHistory); // [YENİ]
                 await database.ref(`users/${uid}/dailyLogs/${state.date}`).set(state);
                 console.log(`☁️ Veriler buluta eşitlendi (${state.date})`);
             } catch (err) {
@@ -671,12 +712,43 @@
 
             if (tabName === 'analysis') {
                 updateVolumeChart(document.getElementById('analysis-exercise-select').value);
+                updateWeightChart(); // [YENİ] Analiz sekmesine geçince grafiği tetikle
             }
         }
 
         function toggleCardio() {
             state.cardioDone = document.getElementById('cardio-checkbox').checked;
             pushStateToCloud();
+        }
+
+        // [YENİ] Kilo Kaydetme Fonksiyonu (Seçili güne kaydeder)
+        function submitWeight() {
+            const input = document.getElementById('weight-input');
+            const value = parseFloat(input.value);
+            
+            if (!value || isNaN(value) || value <= 0) {
+                alert("Lütfen geçerli bir kilo değeri girin! (Örn: 92.8)");
+                return;
+            }
+
+            weightHistory[state.date] = value;
+            input.value = '';
+            
+            updateUI();
+            pushStateToCloud();
+            if(!document.getElementById('content-analysis').classList.contains('hidden')) {
+                updateWeightChart();
+            }
+        }
+
+        // [YENİ] Tarih bazlı kilo logu silme fonksiyonu
+        function removeWeight(dateKey) {
+            if (confirm(`${dateKey} tarihli kilo kaydını silmek istiyor musunuz?`)) {
+                delete weightHistory[dateKey];
+                updateUI();
+                pushStateToCloud();
+                updateWeightChart();
+            }
         }
 
         function renderWorkoutMatrix() {
@@ -946,7 +1018,13 @@
             const cardioCheck = document.getElementById('cardio-checkbox');
             if (cardioCheck) cardioCheck.checked = state.cardioDone || false;
 
-            // [YENİ] Başlıklardaki tarih metinlerini seçilen güne göre dinamik güncelle
+            // [YENİ] Seçili günün kilosu varsa Dashboard'da göster, yoksa tire koy
+            const dayWeight = weightHistory[state.date];
+            document.getElementById('dashboard-current-weight').innerText = dayWeight ? dayWeight.toFixed(1) : '-';
+
+            // [YENİ] Kilo log tablosunu render et
+            renderWeightHistoryTable();
+
             const parsedDate = new Date(state.date + "T00:00:00");
             const dynamicDateStr = parsedDate.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             
@@ -955,6 +1033,33 @@
             if(tableTitle) tableTitle.innerText = `Tüketilen Besinler (${parsedDate.toLocaleDateString('tr-TR', {day:'numeric', month:'short'})})`;
 
             updateMacroDonutChart(tp, tcrb, tf);
+        }
+
+        // [YENİ] Kilo Log Tablosunu Oluşturan Yardımcı Fonksiyon
+        function renderWeightHistoryTable() {
+            const tbody = document.getElementById('weight-history-tbody');
+            if (!tbody) return;
+            
+            const sortedDates = Object.keys(weightHistory).sort((a, b) => new Date(b) - new Date(a));
+            
+            if (sortedDates.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-xs text-zinc-500">Kilo kaydı bulunamadı.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sortedDates.map(dateKey => {
+                const d = new Date(dateKey + "T00:00:00");
+                const formattedDate = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
+                return `
+                    <tr class="border-b border-zinc-800/60 font-mono text-xs hover:bg-zinc-900/20">
+                        <td class="px-4 py-2 text-zinc-400 font-sans">${formattedDate}</td>
+                        <td class="px-4 py-2 text-center text-emerald-400 font-bold">${weightHistory[dateKey].toFixed(1)} kg</td>
+                        <td class="px-4 py-2 text-center">
+                            <button onclick="removeWeight('${dateKey}')" class="text-red-500 hover:text-red-400 font-sans cursor-pointer">Sil</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function updateMacroDonutChart(p, c, f) {
@@ -1001,6 +1106,57 @@
                     type: 'line',
                     data: { labels: labels, datasets: [{ data: volumes, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.05)', fill: true, tension: 0.2 }] },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            }
+        }
+
+        // [YENİ] Kilo Trend Çizgi Grafiğini Çizen ve Güncelleyen Motor (Zaman Sıralı)
+        function updateWeightChart() {
+            const ctx = document.getElementById('weightLineChart');
+            if (!ctx) return;
+
+            const sortedDates = Object.keys(weightHistory).sort((a, b) => new Date(a) - new Date(b));
+            const weights = sortedDates.map(date => weightHistory[date]);
+            const labels = sortedDates.map(date => {
+                const d = new Date(date + "T00:00:00");
+                return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+            });
+
+            if (weightChartInstance) {
+                weightChartInstance.data.labels = labels;
+                weightChartInstance.data.datasets[0].data = weights;
+                weightChartInstance.update();
+            } else {
+                weightChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: weights,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                            fill: true,
+                            tension: 0.25,
+                            borderWidth: 2,
+                            pointBackgroundColor: '#34d399',
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                grid: { color: 'rgba(63, 63, 70, 0.2)' },
+                                ticks: { color: '#a1a1aa', font: { family: 'Monospace', size: 11 } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#a1a1aa', font: { size: 10 } }
+                            }
+                        }
+                    }
                 });
             }
         }
