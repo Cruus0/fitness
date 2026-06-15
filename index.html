@@ -562,21 +562,6 @@
                     </div>
                 </div>
 
-                <!-- 📸 FOTOĞRAF LOGU -->
-                <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-md font-bold text-zinc-200">📸 İlerleme Fotoğraf Logu</h3>
-                        <label class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-colors">
-                            Fotoğraf Yükle
-                            <input type="file" id="photo-upload-input" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
-                        </label>
-                    </div>
-                    <p class="text-xs text-zinc-400">Haftada bir ilerleme fotoğrafı çekip yükleyin. Vücut kompozisyonu en iyi görsel olarak takip edilir.</p>
-                    <div id="photo-gallery" class="photo-grid">
-                        <p class="text-xs text-zinc-500 italic col-span-full">Henüz fotoğraf yüklenmemiş.</p>
-                    </div>
-                </div>
-
                 <!-- PR Özet -->
                 <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
                     <h3 class="text-md font-bold text-zinc-200">📈 Tüm Egzersizlerin En İyi Dereceleri (PR)</h3>
@@ -720,8 +705,8 @@
         { id: "mast_p",  name: "Masteron Propionate",   dose: "120mg/hafta (~17mg/gün)", eod: true },
         { id: "ai",      name: "Aromataz İnhibitörü",   dose: "Gerektiğinde",           eod: false },
         { id: "multivitamin", name: "Multivitamin",      dose: "1 tablet/gün",           eod: false },
-        { id: "nac600",                   name: "NAC 600", dose: "2 kapsül/gün",           eod: false },
-        { id: "MilkThistle",    name: "Milk Thistle", dose: "2 Kapsül/gün",                 eod: false }
+        { id: "nac600",    name: "nac 600", dose: "2 kapsül/gün",           eod: false },
+        { id: "Milk Thistle",    name: "Milk Thistle", dose: "2 kapsül/gün",                 eod: false }
     ];
 
     const WORKOUT_DATA = [
@@ -1513,10 +1498,37 @@
     function renderWorkouts() {
         const container = document.getElementById('workout-container');
         container.innerHTML = '';
+        const prs = getAllPRs();
+
         WORKOUT_DATA.forEach(day => {
             let exerciseRows = '';
             day.exercises.forEach((ex, idx) => {
                 const exId = `${day.id}_${idx}`;
+                
+                let lastLift = null;
+                Object.entries(liftHistory).forEach(([key, entries]) => {
+                    let entriesArr = Array.isArray(entries) ? entries : Object.values(entries);
+                    entriesArr.forEach(e => {
+                        if (typeof e !== 'object' || !e) return;
+                        const exName = e.exercise || e.name || e.exerciseName;
+                        if (exName === ex.name) {
+                            let entryDate = e.date || key;
+                            if (!lastLift || entryDate > lastLift.date || (e.timestamp && lastLift.timestamp && e.timestamp > lastLift.timestamp)) {
+                                lastLift = { weight: e.weight, reps: e.reps, date: entryDate, timestamp: e.timestamp || 0 };
+                            }
+                        }
+                    });
+                });
+                
+                const pr = prs[ex.name];
+                let statsHtml = '';
+                if (lastLift || pr) {
+                    statsHtml = '<div class="flex items-center gap-3 mt-1 mb-1 pl-1">';
+                    if (lastLift) statsHtml += `<span class="text-[10px] text-zinc-400">Son: <strong class="text-zinc-300">${lastLift.weight}kg × ${lastLift.reps}</strong> <span class="opacity-50">(${formatDateTR(lastLift.date)})</span></span>`;
+                    if (pr) statsHtml += `<span class="text-[10px] text-emerald-500/80">PR: <strong class="text-emerald-400">${pr.weight}kg × ${pr.reps}</strong></span>`;
+                    statsHtml += '</div>';
+                }
+
                 exerciseRows += `
                     <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/60 space-y-2">
                         <div class="flex justify-between items-start gap-2 flex-wrap">
@@ -1528,6 +1540,7 @@
                                 ⏱️ ${ex.rest}s
                             </button>
                         </div>
+                        ${statsHtml}
                         <div class="flex items-center gap-2 flex-wrap">
                             <input type="number" id="w-${exId}" step="0.5" placeholder="Ağırlık (kg)" class="flex-1 min-w-[80px] bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
                             <input type="number" id="r-${exId}" placeholder="Tekrar" class="w-16 bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
