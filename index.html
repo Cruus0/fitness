@@ -787,7 +787,7 @@
     let weeklyOffset     = 0;
 
     let state = {
-        date:         new Date().toISOString().split('T')[0],
+        date:         getLocalDateStr(),
         cardioDone:   false,
         foods:        [],
         water:        0,
@@ -890,7 +890,7 @@
     //  GECE YARISI KONTROLÜ
     // ══════════════════════════════════════════════════════════════
     function checkMidnight() {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getLocalDateStr();
         if (typeof window.systemToday === 'undefined') window.systemToday = todayStr;
         if (todayStr !== window.systemToday) {
             const wasLookingAtOldToday = (state.date === window.systemToday);
@@ -911,7 +911,7 @@
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(today.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = getLocalDateStr(d);
             const dayNum  = d.getDate();
             const dayName = d.toLocaleDateString('tr-TR', { weekday: 'short' });
             const isActive = (state.date === dateStr);
@@ -1789,7 +1789,7 @@
         for (let i = 0; i < 7; i++) {
             const d = new Date(monday);
             d.setDate(monday.getDate() + i);
-            dates.push(d.toISOString().split('T')[0]);
+            dates.push(getLocalDateStr(d));
         }
         return dates;
     }
@@ -1997,7 +1997,7 @@
                 if (typeof e !== 'object' || !e) return;
                 let entryDate = e.date;
                 if (!entryDate && /^\d{4}-\d{2}-\d{2}$/.test(key)) entryDate = key;
-                else if (!entryDate && e.timestamp) entryDate = new Date(e.timestamp).toISOString().split('T')[0];
+                else if (!entryDate && e.timestamp) entryDate = getLocalDateStr(new Date(e.timestamp));
                 else if (!entryDate) entryDate = key;
                 
                 const exerciseName = e.exercise || e.name || e.exerciseName || 'Bilinmeyen Egzersiz';
@@ -2066,7 +2066,7 @@
                 
                 let entryDate = e.date;
                 if (!entryDate && /^\d{4}-\d{2}-\d{2}$/.test(key)) entryDate = key;
-                else if (!entryDate && e.timestamp) entryDate = new Date(e.timestamp).toISOString().split('T')[0];
+                else if (!entryDate && e.timestamp) entryDate = getLocalDateStr(new Date(e.timestamp));
                 else if (!entryDate) entryDate = key;
                 
                 const exerciseName = e.exercise || e.name || e.exerciseName || 'Bilinmeyen Egzersiz';
@@ -2321,6 +2321,13 @@
     // ══════════════════════════════════════════════════════════════
     //  YARDIMCI FONKSİYONLAR
     // ══════════════════════════════════════════════════════════════
+    function getLocalDateStr(d = new Date()) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     function formatDateTR(dateStr) {
         if (!dateStr || dateStr === 'Invalid Date' || dateStr === 'undefined') return '-';
         const d = new Date(dateStr + 'T00:00:00');
@@ -2331,7 +2338,7 @@
     // ══════════════════════════════════════════════════════════════
     //  BAŞLATMA
     // ══════════════════════════════════════════════════════════════
-    window.systemToday = new Date().toISOString().split('T')[0];
+    window.systemToday = getLocalDateStr();
     renderDateBar();
     </script>
 </body>
