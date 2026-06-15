@@ -705,8 +705,8 @@
         { id: "mast_p",  name: "Masteron Propionate",   dose: "120mg/hafta (~17mg/gün)", eod: true },
         { id: "ai",      name: "Aromataz İnhibitörü",   dose: "Gerektiğinde",           eod: false },
         { id: "multivitamin", name: "Multivitamin",      dose: "1 tablet/gün",           eod: false },
-        { id: "nac600",    name: "nac 600", dose: "2 kapsül/gün",           eod: false },
-        { id: "Milk Thistle",    name: "Milk Thistle", dose: "2 kapsül/gün",                 eod: false }
+        { id: "fish_oil",    name: "Omega-3 Balık Yağı", dose: "2 kapsül/gün",           eod: false },
+        { id: "creatine",    name: "Kreatin Monohidrat", dose: "5g/gün",                 eod: false }
     ];
 
     const WORKOUT_DATA = [
@@ -806,6 +806,7 @@
     let timerInterval    = null;
     let timerSeconds     = 0;
     let timerExercise    = '';
+    let timerTargetTime  = 0;
 
     // ══════════════════════════════════════════════════════════════
     //  AUTH
@@ -1415,13 +1416,15 @@
     function startTimer(seconds, exerciseName) {
         timerSeconds  = seconds;
         timerExercise = exerciseName;
+        timerTargetTime = Date.now() + (seconds * 1000);
         document.getElementById('timer-exercise-name').textContent = exerciseName;
         document.getElementById('timer-overlay').classList.add('active');
         updateTimerDisplay();
 
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            timerSeconds--;
+            const remaining = Math.round((timerTargetTime - Date.now()) / 1000);
+            timerSeconds = Math.max(0, remaining);
             updateTimerDisplay();
             if (timerSeconds <= 0) {
                 clearInterval(timerInterval);
@@ -1446,15 +1449,24 @@
     }
 
     function addTimerSeconds(delta) {
-        timerSeconds = Math.max(0, timerSeconds + delta);
+        if (timerSeconds <= 0) {
+            timerTargetTime = Date.now() + (delta * 1000);
+        } else {
+            timerTargetTime += (delta * 1000);
+        }
+        
+        const remaining = Math.round((timerTargetTime - Date.now()) / 1000);
+        timerSeconds = Math.max(0, remaining);
         updateTimerDisplay();
+        
         if (timerSeconds > 0 && !timerInterval) {
             document.getElementById('timer-display').classList.add('timer-pulse');
             document.getElementById('timer-display').classList.remove('timer-shake');
             document.getElementById('timer-status-text').textContent = 'Dinlenme Süresi';
             document.getElementById('timer-status-text').className = 'text-sm text-zinc-400';
             timerInterval = setInterval(() => {
-                timerSeconds--;
+                const currentRemaining = Math.round((timerTargetTime - Date.now()) / 1000);
+                timerSeconds = Math.max(0, currentRemaining);
                 updateTimerDisplay();
                 if (timerSeconds <= 0) {
                     clearInterval(timerInterval); timerInterval = null;
