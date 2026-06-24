@@ -504,6 +504,27 @@
 
             <!-- ════════ ANALİZ ════════ -->
             <section id="content-analysis" class="hidden space-y-6">
+                <!-- 👤 PROFİL AYARLARI -->
+                <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4 shadow-md">
+                    <h3 class="text-md font-bold text-zinc-200">👤 Fiziksel Profil (Yağ Oranı İçin)</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-[10px] text-zinc-500 block mb-1">Cinsiyet</label>
+                            <select id="profile-gender" onchange="saveProfile()" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
+                                <option value="0">Erkek</option>
+                                <option value="1">Kadın</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-zinc-500 block mb-1">Yaş</label>
+                            <input type="number" id="profile-age" onchange="saveProfile()" placeholder="25" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-zinc-500 block mb-1">Boy (cm)</label>
+                            <input type="number" id="profile-height" onchange="saveProfile()" placeholder="180" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="md:col-span-2 bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4 shadow-md">
                         <h3 class="text-md font-bold text-zinc-200">📉 Kilo Değişim Trendi</h3>
@@ -532,37 +553,48 @@
 
                 <!-- 📏 VÜCUT ÖLÇÜLERİ -->
                 <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
-                    <h3 class="text-md font-bold text-zinc-200">📏 Vücut Ölçüleri Takibi</h3>
-                    <p class="text-xs text-zinc-400">Rekomposisyon takibi için haftalık ölçüm alın. Kilo değişmese bile bel çevresi farkı görülür.</p>
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
-                        <div>
-                            <label class="text-[10px] text-zinc-500 block mb-1">Göğüs (cm)</label>
-                            <input type="number" id="meas-chest" step="0.5" placeholder="100" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-zinc-500 block mb-1">Bel (cm)</label>
-                            <input type="number" id="meas-waist" step="0.5" placeholder="85" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-zinc-500 block mb-1">Kol (cm)</label>
-                            <input type="number" id="meas-arm" step="0.5" placeholder="38" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-zinc-500 block mb-1">Bacak (cm)</label>
-                            <input type="number" id="meas-leg" step="0.5" placeholder="58" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 font-mono focus:outline-none focus:border-emerald-500">
-                        </div>
-                        <button onclick="saveBodyMeasurements()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2 rounded-lg cursor-pointer transition-colors">Ölçüm Kaydet</button>
+                    <h3 class="text-md font-bold text-zinc-200">📏 Vücut Ölçüleri & Yağ Oranı (VYO)</h3>
+                    <p class="text-[11px] text-zinc-400">Tüm ölçümleri milimetrik hassasiyetle (cm) girin. Kilo bilginiz otomatik olarak o günkü kilonuzdan çekilir.</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 items-end">
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">Boyun</label><input type="number" id="meas-neck" step="0.5" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:border-emerald-500"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">Omuz</label><input type="number" id="meas-shoulder" step="0.5" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:border-emerald-500"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">Göğüs</label><input type="number" id="meas-chest" step="0.5" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:border-emerald-500"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">Biceps</label><input type="number" id="meas-arm" step="0.5" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:border-emerald-500"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">Bel</label><input type="number" id="meas-waist" step="0.5" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:border-emerald-500"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">Kalça</label><input type="number" id="meas-hip" step="0.5" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:border-emerald-500"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">Bacak</label><input type="number" id="meas-leg" step="0.5" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:border-emerald-500"></div>
+                        <div><label class="text-[10px] text-zinc-500 block mb-1">Bilek</label><input type="number" id="meas-wrist" step="0.5" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 font-mono focus:border-emerald-500"></div>
                     </div>
-                    <div class="overflow-x-auto mt-3">
-                        <table class="w-full text-left text-sm text-zinc-400">
-                            <thead class="bg-zinc-950 text-xs text-zinc-50 uppercase border-b border-zinc-800">
+                    <div class="flex justify-end mt-2">
+                        <button onclick="saveBodyMeasurements()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-6 py-2 rounded-lg cursor-pointer transition-colors w-full md:w-auto">Ölçümleri Analiz Et & Kaydet</button>
+                    </div>
+                    
+                    <div id="vyo-results-card" class="hidden mt-4 p-4 bg-zinc-950 border border-emerald-500/30 rounded-xl">
+                        <h4 class="text-xs font-bold text-emerald-400 mb-3 uppercase tracking-wide">Analiz Raporu</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div><p class="text-[10px] text-zinc-500">Vücut Yağ Oranı</p><p id="res-bf" class="text-lg font-bold text-zinc-200 font-mono">%<span class="text-emerald-400">0.0</span></p></div>
+                            <div><p class="text-[10px] text-zinc-500">Yağ Kütlesi</p><p id="res-fm" class="text-lg font-bold text-zinc-200 font-mono"><span class="text-rose-400">0.0</span> kg</p></div>
+                            <div><p class="text-[10px] text-zinc-500">Yağsız Kütle (LBM)</p><p id="res-lbm" class="text-lg font-bold text-zinc-200 font-mono"><span class="text-cyan-400">0.0</span> kg</p></div>
+                            <div><p class="text-[10px] text-zinc-500">İdeal Ağırlık</p><p id="res-ideal" class="text-lg font-bold text-zinc-200 font-mono"><span class="text-amber-400">0.0</span> kg</p></div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto mt-4 border border-zinc-800 rounded-lg">
+                        <table class="w-full text-left text-xs text-zinc-400 whitespace-nowrap">
+                            <thead class="bg-zinc-950 text-[10px] text-zinc-50 uppercase border-b border-zinc-800">
                                 <tr>
-                                    <th class="px-4 py-2">Tarih</th>
-                                    <th class="px-4 py-2 text-center">Göğüs</th>
-                                    <th class="px-4 py-2 text-center">Bel</th>
-                                    <th class="px-4 py-2 text-center">Kol</th>
-                                    <th class="px-4 py-2 text-center">Bacak</th>
-                                    <th class="px-4 py-2 text-center">İşlem</th>
+                                    <th class="px-3 py-2">Tarih</th>
+                                    <th class="px-3 py-2 text-center text-emerald-400">Yağ %</th>
+                                    <th class="px-3 py-2 text-center text-cyan-400">LBM</th>
+                                    <th class="px-3 py-2 text-center">Byn</th>
+                                    <th class="px-3 py-2 text-center">Omz</th>
+                                    <th class="px-3 py-2 text-center">Göğ</th>
+                                    <th class="px-3 py-2 text-center">Kol</th>
+                                    <th class="px-3 py-2 text-center">Bel</th>
+                                    <th class="px-3 py-2 text-center">Klç</th>
+                                    <th class="px-3 py-2 text-center">Bck</th>
+                                    <th class="px-3 py-2 text-center">Blk</th>
+                                    <th class="px-3 py-2 text-center">İşlem</th>
                                 </tr>
                             </thead>
                             <tbody id="measurements-tbody"></tbody>
@@ -1635,35 +1667,135 @@
     }
 
     // ══════════════════════════════════════════════════════════════
-    //  📏 VÜCUT ÖLÇÜLERİ (#9)
+    //  📏 VÜCUT ÖLÇÜLERİ VE YAĞ ORANI (VYO) HESAPLAMA
     // ══════════════════════════════════════════════════════════════
-    function saveBodyMeasurements() {
-        const chest = parseFloat(document.getElementById('meas-chest').value);
-        const waist = parseFloat(document.getElementById('meas-waist').value);
-        const arm   = parseFloat(document.getElementById('meas-arm').value);
-        const leg   = parseFloat(document.getElementById('meas-leg').value);
+    function saveProfile() {
+        const gender = parseInt(document.getElementById('profile-gender').value) || 0;
+        const age = parseInt(document.getElementById('profile-age').value) || 25;
+        const height = parseFloat(document.getElementById('profile-height').value) || 180;
+        userSettings.gender = gender;
+        userSettings.age = age;
+        userSettings.height = height;
+        if (currentUser) database.ref(`users/${currentUser.uid}/settings`).update({ gender, age, height });
+    }
 
-        if ([chest, waist, arm, leg].every(v => isNaN(v))) {
+    function getLatestWeight(dateStr) {
+        let w = weightHistory[dateStr];
+        if (w && w > 0) return w;
+        const sortedDates = Object.keys(weightHistory).sort().reverse();
+        for (let d of sortedDates) {
+            if (d <= dateStr && weightHistory[d] > 0) return weightHistory[d];
+        }
+        return 0;
+    }
+
+    function calculateBodyFat(m, weight) {
+        if (!weight || weight <= 0) return null;
+        const h = userSettings.height || 180;
+        const gender = userSettings.gender || 0; // 0: Erkek, 1: Kadın
+        
+        // US Navy Formula
+        let bfNavy = 0;
+        if (m.waist && m.neck) {
+            if (gender === 0) {
+                bfNavy = 495 / (1.0324 - 0.19077 * Math.log10(m.waist - m.neck) + 0.15456 * Math.log10(h)) - 450;
+            } else if (m.hip) {
+                bfNavy = 495 / (1.29579 - 0.35004 * Math.log10(m.waist + m.hip - m.neck) + 0.22100 * Math.log10(h)) - 450;
+            }
+        }
+
+        // YMCA Formula
+        let bfYmca = 0;
+        if (m.waist) {
+            const weightLbs = weight * 2.20462;
+            const waistIn = m.waist / 2.54;
+            if (gender === 0) {
+                bfYmca = (-74.11 + 4.15 * waistIn - 0.082 * weightLbs) / weightLbs * 100;
+            } else {
+                bfYmca = (-76.76 + 4.15 * waistIn - 0.082 * weightLbs) / weightLbs * 100;
+            }
+        }
+
+        let bf = bfNavy > 0 ? bfNavy : (bfYmca > 0 ? bfYmca : 0);
+        if (bfNavy > 0 && bfYmca > 0) bf = (bfNavy + bfYmca) / 2;
+
+        // Custom Muscle Regression (Kas Hacmi Endeksi düzeltmesi)
+        if (bf > 0 && m.waist && m.shoulder && m.chest && m.arm && m.leg) {
+            const muscleCirc = m.shoulder + m.chest + m.arm + m.leg;
+            const ratio = muscleCirc / m.waist; 
+            if (gender === 0 && ratio > 4.0) {
+                const bonus = (ratio - 4.0) * 4;
+                bf = Math.max(4, bf - bonus);
+            } else if (gender === 1 && ratio > 3.8) {
+                const bonus = (ratio - 3.8) * 3;
+                bf = Math.max(10, bf - bonus);
+            }
+        }
+
+        if (bf <= 0) return null;
+
+        const fatMass = weight * (bf / 100);
+        const lbm = weight - fatMass;
+
+        // Ideal Weight (Devine formula modifiye edildi)
+        const hInches = h / 2.54;
+        let baseIdeal = gender === 0 ? 50.0 + 2.3 * (hInches - 60) : 45.5 + 2.3 * (hInches - 60);
+        
+        // Frame size (Bilek) adjustment
+        if (m.wrist) {
+            const r = h / m.wrist;
+            if (gender === 0) {
+                if (r > 10.4) baseIdeal *= 0.9;
+                else if (r < 9.6) baseIdeal *= 1.1;
+            } else {
+                if (r > 11.0) baseIdeal *= 0.9;
+                else if (r < 10.1) baseIdeal *= 1.1;
+            }
+        }
+
+        return { bf, fatMass, lbm, ideal: baseIdeal };
+    }
+
+    function saveBodyMeasurements() {
+        const entry = {
+            neck: parseFloat(document.getElementById('meas-neck').value),
+            shoulder: parseFloat(document.getElementById('meas-shoulder').value),
+            chest: parseFloat(document.getElementById('meas-chest').value),
+            arm: parseFloat(document.getElementById('meas-arm').value),
+            waist: parseFloat(document.getElementById('meas-waist').value),
+            hip: parseFloat(document.getElementById('meas-hip').value),
+            leg: parseFloat(document.getElementById('meas-leg').value),
+            wrist: parseFloat(document.getElementById('meas-wrist').value)
+        };
+        
+        Object.keys(entry).forEach(k => { if(isNaN(entry[k])) delete entry[k]; });
+
+        if (Object.keys(entry).length === 0) {
             showModal({ title: 'Hata', body: '<p class="text-sm text-zinc-300">En az bir ölçü giriniz.</p>', buttons: [{ label: 'Tamam', primary: true, action: () => {} }] });
             return;
         }
 
-        const entry = {};
-        if (!isNaN(chest)) entry.chest = chest;
-        if (!isNaN(waist)) entry.waist = waist;
-        if (!isNaN(arm))   entry.arm   = arm;
-        if (!isNaN(leg))   entry.leg   = leg;
+        const currentWeight = getLatestWeight(state.date);
+        if (!currentWeight || currentWeight <= 0) {
+            showModal({ title: 'Kilo Verisi Eksik', body: '<p class="text-sm text-zinc-300">Vücut yağ oranının hesaplanabilmesi için sisteme en az bir kilo kaydı girilmiş olması gereklidir. Ölçümleriniz kaydedildi ancak VYO hesaplanamadı. Lütfen Dashboard üzerinden güncel kilonuzu girin.</p>', buttons: [{ label: 'Tamam', primary: true, action: () => {} }] });
+        }
+
+        const calc = calculateBodyFat(entry, currentWeight);
+        if (calc) {
+            entry.bf = calc.bf;
+            entry.lbm = calc.lbm;
+        }
 
         bodyMeasurements[state.date] = entry;
         if (currentUser) database.ref(`users/${currentUser.uid}/bodyMeasurements/${state.date}`).set(entry);
 
-        document.getElementById('meas-chest').value = '';
-        document.getElementById('meas-waist').value = '';
-        document.getElementById('meas-arm').value   = '';
-        document.getElementById('meas-leg').value   = '';
+        ['neck','shoulder','chest','arm','waist','hip','leg','wrist'].forEach(k => {
+            const el = document.getElementById(`meas-${k}`);
+            if (el) el.value = '';
+        });
 
         renderMeasurementsTable();
-        showModal({ title: '📏 Ölçüm Kaydedildi', body: `<p class="text-sm text-zinc-300">${state.date} tarihli vücut ölçüleri kaydedildi.</p>`, buttons: [{ label: 'Tamam', primary: true, action: () => {} }] });
+        showModal({ title: '📏 Analiz & Ölçüm Kaydedildi', body: `<p class="text-sm text-zinc-300">${state.date} tarihli vücut ölçüleri ve yağ oranı analizi güncellendi.</p>`, buttons: [{ label: 'Tamam', primary: true, action: () => {} }] });
     }
 
     function deleteMeasurement(dateStr) {
@@ -1677,18 +1809,41 @@
         if (!tbody) return;
         const sorted = Object.entries(bodyMeasurements).sort((a, b) => b[0].localeCompare(a[0]));
         if (sorted.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-zinc-500 text-xs">Henüz ölçüm kaydedilmemiş.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="12" class="px-3 py-4 text-center text-zinc-500 text-xs">Henüz ölçüm kaydedilmemiş.</td></tr>';
+            document.getElementById('vyo-results-card').classList.add('hidden');
             return;
         }
+        
+        const latest = sorted[0];
+        const m = latest[1];
+        const currentWeight = getLatestWeight(latest[0]);
+        const calc = calculateBodyFat(m, currentWeight);
+        
+        if (calc) {
+            document.getElementById('vyo-results-card').classList.remove('hidden');
+            document.getElementById('res-bf').innerHTML = `%<span class="text-emerald-400">${calc.bf.toFixed(1)}</span>`;
+            document.getElementById('res-fm').innerHTML = `<span class="text-rose-400">${calc.fatMass.toFixed(1)}</span> kg`;
+            document.getElementById('res-lbm').innerHTML = `<span class="text-cyan-400">${calc.lbm.toFixed(1)}</span> kg`;
+            document.getElementById('res-ideal').innerHTML = `<span class="text-amber-400">${calc.ideal.toFixed(1)}</span> kg`;
+        } else {
+            document.getElementById('vyo-results-card').classList.add('hidden');
+        }
+
         tbody.innerHTML = sorted.map(([date, m]) => `
             <tr class="border-b border-zinc-800/60 hover:bg-zinc-800/30">
-                <td class="px-4 py-2 font-mono text-xs">${formatDateTR(date)}</td>
-                <td class="px-4 py-2 text-center font-mono text-xs">${m.chest || '-'}</td>
-                <td class="px-4 py-2 text-center font-mono text-xs">${m.waist || '-'}</td>
-                <td class="px-4 py-2 text-center font-mono text-xs">${m.arm || '-'}</td>
-                <td class="px-4 py-2 text-center font-mono text-xs">${m.leg || '-'}</td>
-                <td class="px-4 py-2 text-center">
-                    <button onclick="deleteMeasurement('${date}')" class="text-red-400 hover:text-red-300 text-xs cursor-pointer">Sil</button>
+                <td class="px-3 py-2 font-mono text-[10px]">${formatDateTR(date)}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px] text-emerald-400 font-bold">${m.bf ? '%' + m.bf.toFixed(1) : '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px] text-cyan-400">${m.lbm ? m.lbm.toFixed(1) : '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px]">${m.neck || '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px]">${m.shoulder || '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px]">${m.chest || '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px]">${m.arm || '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px]">${m.waist || '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px]">${m.hip || '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px]">${m.leg || '-'}</td>
+                <td class="px-3 py-2 text-center font-mono text-[10px]">${m.wrist || '-'}</td>
+                <td class="px-3 py-2 text-center">
+                    <button onclick="deleteMeasurement('${date}')" class="text-red-400 hover:text-red-300 text-[10px] cursor-pointer">Sil</button>
                 </td>
             </tr>
         `).join('');
@@ -2296,6 +2451,20 @@
         // Tablo tarih başlığı
         const titleEl = document.getElementById('table-date-title');
         if (titleEl) titleEl.textContent = `Tüketilen Besinler — ${formatDateTR(state.date)}`;
+
+        // Profil Değerlerini Yükle
+        if (userSettings.gender !== undefined) {
+            const genderEl = document.getElementById('profile-gender');
+            if(genderEl) genderEl.value = userSettings.gender;
+        }
+        if (userSettings.age !== undefined) {
+            const ageEl = document.getElementById('profile-age');
+            if(ageEl) ageEl.value = userSettings.age;
+        }
+        if (userSettings.height !== undefined) {
+            const heightEl = document.getElementById('profile-height');
+            if(heightEl) heightEl.value = userSettings.height;
+        }
 
         // Besin tablosu
         const tbody = document.getElementById('food-table-body');
