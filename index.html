@@ -200,12 +200,12 @@
                     <!-- Farmakoloji -->
                     <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
                         <div>
-                            <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">Bugünkü Farmakoloji Protokolü</h3>
-                            <p class="text-xs text-zinc-500 mb-4">Stabil kan seviyesi için enjeksiyonlar gün aşırı (EOD) veya Haftada 3 bölünmelidir.</p>
+                            <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">Bugünkü Antreman Protokolü</h3>
+                            <p class="text-xs text-zinc-500 mb-4"></p>
                         </div>
                         <div class="flex gap-2 flex-wrap">
-                            <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-full font-mono">Testo E (~43mg/gün)</span>
-                            <span class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs rounded-full font-mono">Mast P (~17mg/gün)</span>
+                            <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-full font-mono">Push - Pull - Legs</span>
+                            <span class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs rounded-full font-mono">Su İç</span>
                         </div>
                     </div>
 
@@ -282,7 +282,7 @@
 
                     <!-- 💊 TAKVİYE HATIRLATICI -->
                     <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                        <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">💊 Takviye & İlaç Takibi</h3>
+                        <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">💊 Supplement & Takibi</h3>
                         <p id="supplement-eod-note" class="text-[10px] text-zinc-500 mb-3"></p>
                         <div id="supplement-checklist" class="space-y-2"></div>
                         <div class="mt-3 pt-2 border-t border-zinc-800/60">
@@ -306,7 +306,7 @@
                             </div>
                             <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
                                 <span class="text-xs text-emerald-500 uppercase block">Protein</span>
-                                <span id="protein-progress" class="text-xl font-bold font-mono text-emerald-400">0 / 220</span>
+                                <span id="protein-progress" class="text-xl font-bold font-mono text-emerald-400">0 / 180</span>
                                 <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
                             </div>
                             <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
@@ -686,7 +686,7 @@
     // ══════════════════════════════════════════════════════════════
     //  SABİTLER & VERİ YAPILARI
     // ══════════════════════════════════════════════════════════════
-    const BASE_TARGETS = { kcal: 2100, protein: 220, carbs: 160, fat: 60 };
+    const BASE_TARGETS = { kcal: 2100, protein: 180, carbs: 160, fat: 60 };
     let TARGETS = { ...BASE_TARGETS };
     const WATER_TARGET = 10; // bardak
 
@@ -741,12 +741,9 @@
     };
 
     const SUPPLEMENT_LIST = [
-        { id: "testo_e", name: "Testosteron Enanthate", dose: "300mg/hafta (~43mg/gün)", eod: true },
-        { id: "mast_p",  name: "Masteron Propionate",   dose: "120mg/hafta (~17mg/gün)", eod: true },
-        { id: "ai",      name: "Aromataz İnhibitörü",   dose: "Gerektiğinde",           eod: false },
-        { id: "multivitamin", name: "Multivitamin",      dose: "1 tablet/gün",           eod: false },
-        { id: "fish_oil",    name: "Omega-3 Balık Yağı", dose: "2 kapsül/gün",           eod: false },
-        { id: "creatine",    name: "Kreatin Monohidrat", dose: "5g/gün",                 eod: false }
+        { id: "multivitamin", name: "Magnezyum",      dose: "1 tablet/gün",           eod: false },
+        { id: "fish_oil",    name: "Milk Thistle", dose: "2 kapsül/gün",           eod: false },
+        { id: "creatine",    name: "Kreatin", dose: "5g/gün",                 eod: false }
     ];
 
     const WORKOUT_DATA = [
@@ -767,7 +764,9 @@
         { id: "legs-a", name: "3. GÜN: BACAK - A (Kuadriseps / Ön Bacak Baskın)", exercises: [
             { name: "Hack Squat veya Leg Press",         target: "3 Set x 6-8 Tekrar", rest: 180 },
             { name: "Leg Extension",                     target: "3 Set x 12 Tekrar (Son set Çift Drop)", rest: 90 },
+            { name: "Lying Leg Curl",                    target: "3 Set x 10 Tekrar", rest: 90 },
             { name: "Romanian Deadlift (RDL)",           target: "3 Set x 10 Tekrar", rest: 120 },
+            { name: "Leg Press (Ayaklar Yukarıda ve Geniş)", target: "3 Set x 12 Tekrar", rest: 120 },
             { name: "Standing Calf Raise",               target: "4 Set x 15 Tekrar (Tepe noktasında 1sn Sıkıştır)", rest: 60 }
         ]},
         { id: "push-b", name: "4. GÜN: İTİŞ - B (Omuz & Üst Göğüs)", exercises: [
@@ -784,12 +783,6 @@
             { name: "Reverse Pec Deck Fly",              target: "3 Set x 15 Tekrar", rest: 60 },
             { name: "Incline Dumbbell Biceps Curl",      target: "3 Set x 12 Tekrar", rest: 90 }
         ]},
-        { id: "legs-b", name: "6. GÜN: BACAK - B (Hamstring / Arka Bacak Baskın)", exercises: [
-            { name: "Lying Leg Curl",                    target: "4 Set x 10 Tekrar", rest: 90 },
-            { name: "Bulgarian Split Squat",             target: "3 Set x 10 Tekrar", rest: 120 },
-            { name: "Leg Press (Ayaklar Yukarıda ve Geniş)", target: "3 Set x 12 Tekrar", rest: 120 },
-            { name: "Seated Calf Raise",                 target: "4 Set x 15 Tekrar", rest: 60 }
-        ]}
     ];
 
     // ══════════════════════════════════════════════════════════════
@@ -1169,7 +1162,7 @@
         const noteEl    = document.getElementById('supplement-eod-note');
         const eod = isEODDay(state.date);
         noteEl.textContent = eod
-            ? '💉 Bugün ENJEKSİYON GÜNÜ (EOD gün aşırı döngüde)'
+            ? '💉 Bugün Antreman GÜNÜ '
             : '📅 Bugün dinlenme günü (enjeksiyon yok)';
         noteEl.className = eod
             ? 'text-[10px] mb-3 font-semibold text-emerald-400'
