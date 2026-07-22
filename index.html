@@ -174,6 +174,7 @@
                 <button onclick="switchTab('macros')"    id="tab-macros"    class="flex-1 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer whitespace-nowrap px-2">Makro Sayıcı</button>
                 <button onclick="switchTab('weekly')"    id="tab-weekly"    class="flex-1 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer whitespace-nowrap px-2">Haftalık Özet</button>
                 <button onclick="switchTab('analysis')"  id="tab-analysis"  class="flex-1 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer whitespace-nowrap px-2">Gelişim & PR</button>
+                <button onclick="switchTab('community')" id="tab-community" class="flex-1 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-zinc-400 hover:text-zinc-200 cursor-pointer whitespace-nowrap px-2 relative">Topluluk<span id="unread-global-badge" class="hidden absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span></button>
             </div>
 
             <!-- TARİH SEÇİCİ -->
@@ -200,12 +201,12 @@
                     <!-- Farmakoloji -->
                     <div class="bg-gradient-to-br from-zinc-900 to-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
                         <div>
-                            <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">Bugünkü Antreman Protokolü</h3>
-                            <p class="text-xs text-zinc-500 mb-4"></p>
+                            <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">Bugünkü Farmakoloji Protokolü</h3>
+                            <p class="text-xs text-zinc-500 mb-4">Stabil kan seviyesi için enjeksiyonlar gün aşırı (EOD) veya Haftada 3 bölünmelidir.</p>
                         </div>
                         <div class="flex gap-2 flex-wrap">
-                            <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-full font-mono">Push - Pull - Legs</span>
-                            <span class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs rounded-full font-mono">Su İç</span>
+                            <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-full font-mono">Testo E (~43mg/gün)</span>
+                            <span class="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs rounded-full font-mono">Mast P (~17mg/gün)</span>
                         </div>
                     </div>
 
@@ -282,7 +283,7 @@
 
                     <!-- 💊 TAKVİYE HATIRLATICI -->
                     <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                        <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">💊 Supplement & Takibi</h3>
+                        <h3 class="text-sm font-bold tracking-wide uppercase text-zinc-400 mb-2">💊 Takviye & İlaç Takibi</h3>
                         <p id="supplement-eod-note" class="text-[10px] text-zinc-500 mb-3"></p>
                         <div id="supplement-checklist" class="space-y-2"></div>
                         <div class="mt-3 pt-2 border-t border-zinc-800/60">
@@ -306,7 +307,7 @@
                             </div>
                             <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
                                 <span class="text-xs text-emerald-500 uppercase block">Protein</span>
-                                <span id="protein-progress" class="text-xl font-bold font-mono text-emerald-400">0 / 180</span>
+                                <span id="protein-progress" class="text-xl font-bold font-mono text-emerald-400">0 / 220</span>
                                 <span class="text-[10px] text-zinc-400 block mt-1">gram</span>
                             </div>
                             <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800/80 text-center">
@@ -506,8 +507,21 @@
             <section id="content-analysis" class="hidden space-y-6">
                 <!-- 👤 PROFİL AYARLARI -->
                 <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4 shadow-md">
-                    <h3 class="text-md font-bold text-zinc-200">👤 Fiziksel Profil (Yağ Oranı İçin)</h3>
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div class="flex items-center gap-3">
+                            <img id="profile-photo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2352525b' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" class="w-10 h-10 rounded-full object-cover border border-zinc-700 bg-zinc-950">
+                            <h3 class="text-md font-bold text-zinc-200">👤 Kişisel Profil & Hesap Ayarları</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-[10px] text-zinc-500">Profil Fotoğrafı (Zorunlu Değil)</label>
+                            <input type="file" id="profile-photo-upload" accept="image/*" class="text-xs text-zinc-300 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20 cursor-pointer w-48" onchange="handleProfilePhoto(event)">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="text-[10px] text-zinc-500 block mb-1">Kullanıcı Adı <span class="text-rose-400">*</span></label>
+                            <input type="text" id="profile-display-name" onchange="saveProfile()" placeholder="Örn: ArdaT" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500" required>
+                        </div>
                         <div>
                             <label class="text-[10px] text-zinc-500 block mb-1">Cinsiyet</label>
                             <select id="profile-gender" onchange="saveProfile()" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500">
@@ -642,7 +656,89 @@
                     </div>
                 </div>
             </section>
+
+            <!-- ════════ COMMUNITY (TOPLULUK) ════════ -->
+            <section id="content-community" class="hidden h-[calc(100vh-180px)] flex flex-col md:flex-row gap-4">
+                <!-- Sol Panel: Kullanıcı Listesi -->
+                <div class="bg-zinc-900 border border-zinc-800 rounded-xl flex flex-col w-full md:w-1/3 md:max-w-[320px] overflow-hidden">
+                    <div class="p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-800/30">
+                        <h3 class="text-sm font-bold text-zinc-200">👥 Kullanıcılar</h3>
+                        <span id="online-users-count" class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">0 Aktif</span>
+                    </div>
+                    <div id="users-list-container" class="flex-1 overflow-y-auto p-3 space-y-1 no-scrollbar">
+                        <!-- Kullanıcılar -->
+                    </div>
+                </div>
+
+                <!-- Sağ Panel: Global Chat -->
+                <div class="bg-zinc-900 border border-zinc-800 rounded-xl flex-1 flex flex-col min-h-[50vh] md:min-h-0 overflow-hidden">
+                    <div class="p-4 border-b border-zinc-800 bg-zinc-800/30">
+                        <h3 class="text-sm font-bold text-zinc-200">🌍 Ortak Sohbet Salonu</h3>
+                    </div>
+                    <div id="global-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
+                        <!-- Mesajlar -->
+                    </div>
+                    <form onsubmit="sendGlobalMessage(event)" class="p-3 border-t border-zinc-800 bg-zinc-950/50 flex gap-2">
+                        <input type="text" id="global-chat-input" placeholder="Herkese açık bir mesaj yaz..." class="flex-1 bg-zinc-800/50 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500" autocomplete="off">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-lg font-bold transition-colors cursor-pointer">Gönder</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- KAMUYA AÇIK PROFİL MODALI -->
+            <div id="public-profile-modal" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target===this) this.classList.add('hidden')">
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm overflow-hidden flex flex-col shadow-2xl">
+                    <div class="p-5 flex flex-col items-center border-b border-zinc-800 bg-gradient-to-b from-zinc-800/50 to-zinc-900">
+                        <img id="pub-prof-photo" src="" class="w-24 h-24 rounded-full object-cover border-4 border-zinc-800 shadow-lg mb-3">
+                        <h2 id="pub-prof-name" class="text-xl font-bold text-zinc-100 flex items-center gap-2"></h2>
+                        <p id="pub-prof-lastseen" class="text-xs text-zinc-500 mt-1"></p>
+                    </div>
+                    <div class="p-5 bg-zinc-900 space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 flex flex-col items-center">
+                                <span class="text-[10px] text-zinc-500 uppercase tracking-wide">Bugün Protein</span>
+                                <span id="pub-prof-protein" class="text-lg font-bold font-mono text-emerald-400">-</span>
+                            </div>
+                            <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 flex flex-col items-center">
+                                <span class="text-[10px] text-zinc-500 uppercase tracking-wide">Bugün Kalori</span>
+                                <span id="pub-prof-cal" class="text-lg font-bold font-mono text-amber-400">-</span>
+                            </div>
+                        </div>
+                        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-center">
+                            <span class="text-[10px] text-zinc-500 uppercase tracking-wide block mb-1">Son Antrenman Rekoru</span>
+                            <span id="pub-prof-pr" class="text-sm font-bold text-cyan-400">-</span>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-zinc-800 bg-zinc-950">
+                        <button id="pub-prof-dm-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                            💬 Mesaj Gönder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DM (ÖZEL MESAJ) POPUP -->
+            <div id="dm-popup-container" class="hidden fixed bottom-0 right-0 md:right-5 w-full md:w-[350px] h-[450px] max-h-[80vh] bg-zinc-900 border border-zinc-700 rounded-t-2xl shadow-2xl z-[70] flex-col transition-transform duration-300 translate-y-full">
+                <div class="p-3 border-b border-zinc-800 bg-zinc-800/80 rounded-t-2xl flex justify-between items-center cursor-pointer" onclick="toggleDMPopup()">
+                    <div class="flex items-center gap-2">
+                        <div class="relative">
+                            <img id="dm-target-photo" src="" class="w-8 h-8 rounded-full object-cover">
+                            <span id="dm-target-status" class="absolute bottom-0 right-0 w-2 h-2 rounded-full border border-zinc-800"></span>
+                        </div>
+                        <span id="dm-target-name" class="text-sm font-bold text-zinc-100"></span>
+                    </div>
+                    <button onclick="closeDM(event)" class="text-zinc-400 hover:text-white p-1 cursor-pointer">✕</button>
+                </div>
+                <div id="dm-messages-container" class="flex-1 overflow-y-auto p-3 bg-zinc-950 no-scrollbar">
+                    <!-- DM Mesajları -->
+                </div>
+                <form onsubmit="sendDirectMessage(event)" class="p-2 border-t border-zinc-800 bg-zinc-900 flex gap-2">
+                    <input type="text" id="dm-input" placeholder="Mesaj yaz..." class="flex-1 bg-zinc-800/50 border border-zinc-700 rounded-full px-4 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-blue-500" autocomplete="off">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-full font-bold transition-colors cursor-pointer">➤</button>
+                </form>
+            </div>
         </main>
+
 
         <!-- MOBİL ALT NAVİGASYON -->
         <div class="md:hidden fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 grid grid-cols-5 py-2 text-center z-40">
@@ -686,7 +782,7 @@
     // ══════════════════════════════════════════════════════════════
     //  SABİTLER & VERİ YAPILARI
     // ══════════════════════════════════════════════════════════════
-    const BASE_TARGETS = { kcal: 2100, protein: 180, carbs: 160, fat: 60 };
+    const BASE_TARGETS = { kcal: 2100, protein: 220, carbs: 160, fat: 60 };
     let TARGETS = { ...BASE_TARGETS };
     const WATER_TARGET = 10; // bardak
 
@@ -741,9 +837,12 @@
     };
 
     const SUPPLEMENT_LIST = [
-        { id: "multivitamin", name: "Magnezyum",      dose: "1 tablet/gün",           eod: false },
-        { id: "fish_oil",    name: "Milk Thistle", dose: "2 kapsül/gün",           eod: false },
-        { id: "creatine",    name: "Kreatin", dose: "5g/gün",                 eod: false }
+        { id: "testo_e", name: "Testosteron Enanthate", dose: "300mg/hafta (~43mg/gün)", eod: true },
+        { id: "mast_p",  name: "Masteron Propionate",   dose: "120mg/hafta (~17mg/gün)", eod: true },
+        { id: "ai",      name: "Aromataz İnhibitörü",   dose: "Gerektiğinde",           eod: false },
+        { id: "multivitamin", name: "Multivitamin",      dose: "1 tablet/gün",           eod: false },
+        { id: "fish_oil",    name: "Omega-3 Balık Yağı", dose: "2 kapsül/gün",           eod: false },
+        { id: "creatine",    name: "Kreatin Monohidrat", dose: "5g/gün",                 eod: false }
     ];
 
     const WORKOUT_DATA = [
@@ -764,9 +863,7 @@
         { id: "legs-a", name: "3. GÜN: BACAK - A (Kuadriseps / Ön Bacak Baskın)", exercises: [
             { name: "Hack Squat veya Leg Press",         target: "3 Set x 6-8 Tekrar", rest: 180 },
             { name: "Leg Extension",                     target: "3 Set x 12 Tekrar (Son set Çift Drop)", rest: 90 },
-            { name: "Lying Leg Curl",                    target: "3 Set x 10 Tekrar", rest: 90 },
             { name: "Romanian Deadlift (RDL)",           target: "3 Set x 10 Tekrar", rest: 120 },
-            { name: "Leg Press (Ayaklar Yukarıda ve Geniş)", target: "3 Set x 12 Tekrar", rest: 120 },
             { name: "Standing Calf Raise",               target: "4 Set x 15 Tekrar (Tepe noktasında 1sn Sıkıştır)", rest: 60 }
         ]},
         { id: "push-b", name: "4. GÜN: İTİŞ - B (Omuz & Üst Göğüs)", exercises: [
@@ -783,6 +880,12 @@
             { name: "Reverse Pec Deck Fly",              target: "3 Set x 15 Tekrar", rest: 60 },
             { name: "Incline Dumbbell Biceps Curl",      target: "3 Set x 12 Tekrar", rest: 90 }
         ]},
+        { id: "legs-b", name: "6. GÜN: BACAK - B (Hamstring / Arka Bacak Baskın)", exercises: [
+            { name: "Lying Leg Curl",                    target: "4 Set x 10 Tekrar", rest: 90 },
+            { name: "Bulgarian Split Squat",             target: "3 Set x 10 Tekrar", rest: 120 },
+            { name: "Leg Press (Ayaklar Yukarıda ve Geniş)", target: "3 Set x 12 Tekrar", rest: 120 },
+            { name: "Seated Calf Raise",                 target: "4 Set x 15 Tekrar", rest: 60 }
+        ]}
     ];
 
     // ══════════════════════════════════════════════════════════════
@@ -1043,7 +1146,7 @@
     //  SEKME SİSTEMİ
     // ══════════════════════════════════════════════════════════════
     function switchTab(tabName) {
-        const tabs = ['dashboard', 'workout', 'macros', 'weekly', 'analysis'];
+        const tabs = ['dashboard', 'workout', 'macros', 'weekly', 'analysis', 'community'];
         tabs.forEach(t => {
             const section = document.getElementById(`content-${t}`);
             const tabBtn  = document.getElementById(`tab-${t}`);
@@ -1061,6 +1164,14 @@
             }
         });
 
+        window.currentTab = tabName;
+        
+        if (tabName === 'community') {
+            const unreadBadge = document.getElementById('unread-global-badge');
+            if(unreadBadge) unreadBadge.classList.add('hidden');
+            renderGlobalChat(); // scroll to bottom if needed
+        }
+        
         if (tabName === 'workout') renderWorkouts();
         if (tabName === 'analysis') {
             renderWeightChart();
@@ -1162,7 +1273,7 @@
         const noteEl    = document.getElementById('supplement-eod-note');
         const eod = isEODDay(state.date);
         noteEl.textContent = eod
-            ? '💉 Bugün Antreman GÜNÜ '
+            ? '💉 Bugün ENJEKSİYON GÜNÜ (EOD gün aşırı döngüde)'
             : '📅 Bugün dinlenme günü (enjeksiyon yok)';
         noteEl.className = eod
             ? 'text-[10px] mb-3 font-semibold text-emerald-400'
@@ -1663,13 +1774,68 @@
     //  📏 VÜCUT ÖLÇÜLERİ VE YAĞ ORANI (VYO) HESAPLAMA
     // ══════════════════════════════════════════════════════════════
     function saveProfile() {
+        const dName = document.getElementById('profile-display-name').value.trim();
         const gender = parseInt(document.getElementById('profile-gender').value) || 0;
         const age = parseInt(document.getElementById('profile-age').value) || 25;
         const height = parseFloat(document.getElementById('profile-height').value) || 180;
+        
+        userSettings.displayName = dName;
         userSettings.gender = gender;
         userSettings.age = age;
         userSettings.height = height;
-        if (currentUser) database.ref(`users/${currentUser.uid}/settings`).update({ gender, age, height });
+
+        if (currentUser) {
+            database.ref(`users/${currentUser.uid}/settings`).update({ 
+                displayName: dName, gender, age, height 
+            });
+            if (dName) syncPublicProfile();
+        }
+    }
+
+    function handleProfilePhoto(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_SIZE = 150;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    }
+                } else {
+                    if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const b64 = canvas.toDataURL('image/jpeg', 0.7);
+                userSettings.photoURL = b64;
+                
+                const photoEl = document.getElementById('profile-photo-preview');
+                if(photoEl) photoEl.src = b64;
+                
+                if (currentUser) {
+                    database.ref(`users/${currentUser.uid}/settings`).update({ photoURL: b64 });
+                    syncPublicProfile();
+                }
+                showModal({ title: 'Başarılı', body: '<p class="text-sm text-zinc-300">Profil fotoğrafı başarıyla yüklendi.</p>', buttons: [{ label: 'Tamam', primary: true, action: () => {} }] });
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     }
 
     function getLatestWeight(dateStr) {
@@ -2391,14 +2557,23 @@
 
             // User settings
             const settingsSnap = await database.ref(`users/${currentUser.uid}/settings`).once('value');
-            if (settingsSnap.exists()) userSettings = { ...userSettings, ...settingsSnap.val() };
+            if (settingsSnap.exists()) {
+                userSettings = { ...userSettings, ...settingsSnap.val() };
+                // Eski ve devasa boyutlu bir fotoğraf yüklenmişse chat'i ve online listesini çökertebilir, o yüzden sıfırlayalım
+                if (userSettings.photoURL && userSettings.photoURL.length > 500000) {
+                    userSettings.photoURL = "";
+                    database.ref(`users/${currentUser.uid}/settings/photoURL`).remove();
+                    showModal({ title: 'Profil Fotoğrafı Sıfırlandı', body: '<p class="text-sm text-zinc-300">Daha önce yüklediğiniz fotoğraf çok büyük olduğu için sistem bağlantınızı yavaşlatıyordu. Lütfen fotoğrafınızı yeniden yükleyin (Sistem artık otomatik küçülterek kaydedecek).</p>', buttons: [{ label: 'Anladım', primary: true, action: () => {} }] });
+                }
+            }
 
             // Supplement log for today
             const suppSnap = await database.ref(`users/${currentUser.uid}/dailyLogs/${state.date}/supplements`).once('value');
             if (suppSnap.exists()) state.supplements = suppSnap.val();
-
+            
         } catch (err) { console.error('Pull error:', err); }
 
+        initPresence();
         await handleDateSelect(state.date);
     }
 
@@ -2446,6 +2621,10 @@
         if (titleEl) titleEl.textContent = `Tüketilen Besinler — ${formatDateTR(state.date)}`;
 
         // Profil Değerlerini Yükle
+        if (userSettings.displayName) {
+            const nameEl = document.getElementById('profile-display-name');
+            if (nameEl) nameEl.value = userSettings.displayName;
+        }
         if (userSettings.gender !== undefined) {
             const genderEl = document.getElementById('profile-gender');
             if(genderEl) genderEl.value = userSettings.gender;
@@ -2457,6 +2636,10 @@
         if (userSettings.height !== undefined) {
             const heightEl = document.getElementById('profile-height');
             if(heightEl) heightEl.value = userSettings.height;
+        }
+        if (userSettings.photoURL) {
+            const photoEl = document.getElementById('profile-photo-preview');
+            if (photoEl) photoEl.src = userSettings.photoURL;
         }
 
         // Besin tablosu
@@ -2497,9 +2680,309 @@
 
         // Favoriler
         renderFavorites();
+        
+        syncPublicProfile(); // Sync stats on UI update
     }
 
     // ══════════════════════════════════════════════════════════════
+    //  SOSYAL AĞ & TOPLULUK FONKSİYONLARI
+    // ══════════════════════════════════════════════════════════════
+    
+    let publicProfiles = {};
+    let globalChatMessages = [];
+    let activeDMId = null;
+    let presenceInited = false;
+    
+    function initPresence() {
+        if (!currentUser || presenceInited) return;
+        presenceInited = true;
+        const myProfileRef = database.ref(`publicProfiles/${currentUser.uid}`);
+        const connectedRef = database.ref('.info/connected');
+        
+        connectedRef.on('value', (snap) => {
+            if (snap.val() === true) {
+                myProfileRef.child('isOnline').set(true);
+                myProfileRef.child('isOnline').onDisconnect().set(false);
+                myProfileRef.child('lastSeen').onDisconnect().set(firebase.database.ServerValue.TIMESTAMP);
+                syncPublicProfile();
+            }
+        });
+
+        // Listen for all profiles
+        database.ref('publicProfiles').on('value', snap => {
+            publicProfiles = snap.val() || {};
+            renderCommunityList();
+        });
+
+        // Listen for Global Chat
+        database.ref('globalChat').limitToLast(50).on('value', snap => {
+            globalChatMessages = [];
+            snap.forEach(child => {
+                globalChatMessages.push({ id: child.key, ...child.val() });
+            });
+            renderGlobalChat();
+            if (currentTab !== 'community' && globalChatMessages.length > 0) {
+                const unreadBadge = document.getElementById('unread-global-badge');
+                if(unreadBadge) unreadBadge.classList.remove('hidden');
+            }
+        });
+    }
+
+    function syncPublicProfile() {
+        if (!currentUser || !userSettings.displayName) return;
+        const t = getTotals();
+        let lastWorkoutStr = "-";
+        if (liftHistory[state.date] && liftHistory[state.date].length > 0) {
+            const last = liftHistory[state.date][liftHistory[state.date].length - 1];
+            lastWorkoutStr = `${last.exercise || last.name}: ${last.weight}kg x ${last.reps}`;
+        }
+        database.ref(`publicProfiles/${currentUser.uid}`).update({
+            displayName: userSettings.displayName,
+            photoURL: userSettings.photoURL || '',
+            stats: {
+                todayProtein: Math.round(t.protein),
+                todayCal: Math.round(t.cal),
+                lastWorkout: lastWorkoutStr
+            }
+        }).catch(err => {
+            console.error('syncPublicProfile error:', err);
+            // Sadece ilk seferde hata mesajı gösterip uyarmak iyi olabilir, veya sessiz fail etmek daha iyidir.
+        });
+    }
+
+    function renderCommunityList() {
+        const container = document.getElementById('users-list-container');
+        if (!container) return;
+        let html = '';
+        let onlineCount = 0;
+        
+        const sortedUsers = Object.entries(publicProfiles).sort((a,b) => {
+            if (a[1].isOnline && !b[1].isOnline) return -1;
+            if (!a[1].isOnline && b[1].isOnline) return 1;
+            return (b[1].lastSeen || 0) - (a[1].lastSeen || 0);
+        });
+
+        sortedUsers.forEach(([uid, prof]) => {
+            if (prof.isOnline) onlineCount++;
+            const statusColor = prof.isOnline ? 'bg-emerald-500' : 'bg-zinc-600';
+            const defaultPhoto = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2352525b' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+            
+            html += `
+                <div onclick="openPublicProfile('${uid}')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-zinc-800/50 cursor-pointer transition-colors border border-transparent hover:border-zinc-700">
+                    <div class="relative">
+                        <img src="${prof.photoURL || defaultPhoto}" class="w-10 h-10 rounded-full object-cover bg-zinc-800">
+                        <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-zinc-900 ${statusColor}"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-bold text-zinc-200 truncate">${prof.displayName || 'İsimsiz'}</h4>
+                        <p class="text-[10px] text-zinc-500 truncate">${prof.isOnline ? 'Çevrimiçi' : (prof.lastSeen ? 'Son görülme: ' + new Date(prof.lastSeen).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) : 'Çevrimdışı')}</p>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html || '<p class="text-xs text-zinc-500 text-center py-4">Kimse yok.</p>';
+        document.getElementById('online-users-count').textContent = `${onlineCount} Aktif`;
+    }
+
+    function renderGlobalChat() {
+        const container = document.getElementById('global-chat-messages');
+        if (!container) return;
+        const defaultPhoto = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2352525b' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+        
+        let html = '';
+        globalChatMessages.forEach(msg => {
+            const isMe = msg.senderId === (currentUser && currentUser.uid);
+            const timeStr = new Date(msg.timestamp).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+            const prof = publicProfiles[msg.senderId] || {};
+            const pPhoto = prof.photoURL || msg.photoURL || defaultPhoto;
+            const pName = prof.displayName || msg.senderName;
+            
+            if (isMe) {
+                html += `
+                    <div class="flex justify-end mb-2">
+                        <div class="bg-emerald-600/20 border border-emerald-500/30 rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%]">
+                            <p class="text-sm text-zinc-100">${msg.text}</p>
+                            <span class="text-[9px] text-emerald-400/60 block text-right mt-1">${timeStr}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="flex gap-2 mb-2">
+                        <img src="${pPhoto}" class="w-8 h-8 rounded-full object-cover mt-1 cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all" onclick="openPublicProfile('${msg.senderId}')">
+                        <div class="bg-zinc-800 rounded-2xl rounded-tl-sm px-4 py-2 max-w-[80%]">
+                            <p class="text-[10px] font-bold text-zinc-400 mb-0.5">${pName}</p>
+                            <p class="text-sm text-zinc-200">${msg.text}</p>
+                            <span class="text-[9px] text-zinc-500 block mt-1">${timeStr}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        const wasAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+        container.innerHTML = html;
+        if (wasAtBottom) container.scrollTop = container.scrollHeight;
+    }
+
+    function sendGlobalMessage(e) {
+        e.preventDefault();
+        if (!currentUser) return;
+        if (!userSettings.displayName) {
+            showModal({ title: 'Uyarı', body: '<p class="text-sm text-zinc-300">Sohbete katılmak için <strong>Gelişim & PR</strong> sekmesinden Profil Ayarlarınızı güncelleyip bir Kullanıcı Adı belirlemelisiniz.</p>', buttons: [{ label: 'Profili Düzenle', primary: true, action: () => { switchTab('analysis'); } }] });
+            return;
+        }
+        const input = document.getElementById('global-chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+        
+        // Mesaja büyük fotoğraf verisini eklemiyoruz, chat performansını arttırmak için!
+        database.ref('globalChat').push({
+            senderId: currentUser.uid,
+            senderName: userSettings.displayName,
+            text: text,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        }).then(() => {
+            input.value = '';
+        }).catch(err => {
+            showModal({ title: 'Gönderim Başarısız', body: `<p class="text-sm text-zinc-300">Mesaj gönderilemedi. Lütfen Firebase veritabanı kurallarınızı kontrol edin (Kural reddi).<br><br>Hata: ${err.message}</p>`, buttons: [{ label: 'Tamam', primary: true, action: () => {} }] });
+        });
+    }
+
+    function openPublicProfile(uid) {
+        if (!publicProfiles[uid]) return;
+        const prof = publicProfiles[uid];
+        const defaultPhoto = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2352525b' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+        
+        document.getElementById('pub-prof-photo').src = prof.photoURL || defaultPhoto;
+        document.getElementById('pub-prof-name').innerHTML = `${prof.displayName || 'İsimsiz'} <span class="w-2.5 h-2.5 rounded-full inline-block ${prof.isOnline ? 'bg-emerald-500' : 'bg-zinc-600'}"></span>`;
+        document.getElementById('pub-prof-lastseen').textContent = prof.isOnline ? 'Şu an çevrimiçi' : (prof.lastSeen ? 'Son görülme: ' + new Date(prof.lastSeen).toLocaleString('tr-TR') : '');
+        
+        document.getElementById('pub-prof-protein').textContent = (prof.stats && prof.stats.todayProtein) ? prof.stats.todayProtein + 'g' : '-';
+        document.getElementById('pub-prof-cal').textContent = (prof.stats && prof.stats.todayCal) ? prof.stats.todayCal + ' kcal' : '-';
+        document.getElementById('pub-prof-pr').textContent = (prof.stats && prof.stats.lastWorkout) ? prof.stats.lastWorkout : 'Kayıt yok';
+
+        const dmBtn = document.getElementById('pub-prof-dm-btn');
+        if (uid === currentUser.uid) {
+            dmBtn.style.display = 'none';
+        } else {
+            dmBtn.style.display = 'flex';
+            dmBtn.onclick = () => {
+                document.getElementById('public-profile-modal').classList.add('hidden');
+                openDM(uid);
+            };
+        }
+
+        document.getElementById('public-profile-modal').classList.remove('hidden');
+    }
+
+    // --- DIRECT MESSAGING ---
+    function openDM(targetUid) {
+        if (!currentUser || !userSettings.displayName) {
+            showModal({ title: 'Uyarı', body: '<p class="text-sm text-zinc-300">DM göndermek için bir Kullanıcı Adı belirlemelisiniz.</p>', buttons: [{ label: 'Tamam', primary: true, action: () => { switchTab('analysis'); } }] });
+            return;
+        }
+        const prof = publicProfiles[targetUid];
+        if (!prof) return;
+
+        const defaultPhoto = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2352525b' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+        
+        document.getElementById('dm-target-name').textContent = prof.displayName || 'İsimsiz';
+        document.getElementById('dm-target-photo').src = prof.photoURL || defaultPhoto;
+        document.getElementById('dm-target-status').className = `absolute bottom-0 right-0 w-2 h-2 rounded-full border border-zinc-800 ${prof.isOnline ? 'bg-emerald-500' : 'bg-zinc-500'}`;
+        
+        const chatId = [currentUser.uid, targetUid].sort().join('_');
+        activeDMId = { chatId, targetUid };
+
+        document.getElementById('dm-messages-container').innerHTML = '<p class="text-xs text-zinc-500 text-center py-4">Mesajlar yükleniyor...</p>';
+        const popup = document.getElementById('dm-popup-container');
+        popup.style.display = 'flex';
+        setTimeout(() => { popup.classList.remove('translate-y-full'); }, 10);
+
+        database.ref(`directMessages/${chatId}/messages`).off('value');
+        database.ref(`directMessages/${chatId}/messages`).on('value', snap => {
+            const container = document.getElementById('dm-messages-container');
+            if (!snap.exists()) {
+                container.innerHTML = '<p class="text-xs text-zinc-500 text-center py-4">Henüz mesaj yok.</p>';
+                return;
+            }
+            let html = '';
+            snap.forEach(child => {
+                const msg = child.val();
+                const isMe = msg.senderId === currentUser.uid;
+                const timeStr = new Date(msg.timestamp).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+                if (isMe) {
+                    html += `
+                        <div class="flex justify-end mb-1">
+                            <div class="bg-blue-600/80 border border-blue-500/50 rounded-2xl rounded-tr-sm px-3 py-1.5 max-w-[80%]">
+                                <p class="text-xs text-zinc-100">${msg.text}</p>
+                                <span class="text-[8px] text-blue-300 block text-right mt-0.5">${timeStr}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="flex gap-1 mb-1">
+                            <div class="bg-zinc-800 rounded-2xl rounded-tl-sm px-3 py-1.5 max-w-[80%]">
+                                <p class="text-xs text-zinc-200">${msg.text}</p>
+                                <span class="text-[8px] text-zinc-500 block mt-0.5">${timeStr}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            const wasAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+            container.innerHTML = html;
+            if (wasAtBottom) container.scrollTop = container.scrollHeight;
+        });
+    }
+
+    function closeDM(e) {
+        if(e) e.stopPropagation();
+        const popup = document.getElementById('dm-popup-container');
+        popup.classList.add('translate-y-full');
+        setTimeout(() => { popup.style.display = 'none'; }, 300);
+        if (activeDMId) database.ref(`directMessages/${activeDMId.chatId}/messages`).off('value');
+        activeDMId = null;
+    }
+
+    function toggleDMPopup() {
+        const popup = document.getElementById('dm-popup-container');
+        if (popup.classList.contains('translate-y-full')) {
+            popup.classList.remove('translate-y-full');
+        } else {
+            popup.classList.add('translate-y-full');
+        }
+    }
+
+    function sendDirectMessage(e) {
+        e.preventDefault();
+        if (!activeDMId || !currentUser) return;
+        const input = document.getElementById('dm-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const msgObj = {
+            senderId: currentUser.uid,
+            text: text,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            isRead: false
+        };
+        
+        database.ref(`directMessages/${activeDMId.chatId}/messages`).push(msgObj);
+        database.ref(`directMessages/${activeDMId.chatId}`).update({
+            lastMessage: text,
+            lastMessageTime: firebase.database.ServerValue.TIMESTAMP,
+            participants: {
+                [currentUser.uid]: true,
+                [activeDMId.targetUid]: true
+            }
+        });
+        
+        input.value = '';
+    }
+
+    // ══════════════════════════════════════════════════════════════
+
     //  YARDIMCI FONKSİYONLAR
     // ══════════════════════════════════════════════════════════════
     function getLocalDateStr(d = new Date()) {
